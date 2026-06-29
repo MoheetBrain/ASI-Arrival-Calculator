@@ -1,0 +1,17 @@
+category,exact_variable_name,unit,ideal_source,backup_source,update_frequency,reliability,conversion_to_model_input,scraping_status
+Compute and Infrastructure,training_compute_flop,FLOPs,Epoch AI API,Lab technical reports,Quarterly,High,Log-transformed to base 10 for OOM calculations,Automated planned
+Compute and Infrastructure,global_compute_stock,H100-equivalents,Epoch GPU Clusters Data Explorer,Financial earnings,Bi-annually,Medium,Bounds maximum concurrent RSI agents,Manual
+Compute and Infrastructure,max_cluster_size,GPUs,Epoch Frontier Data Centers,Semianalysis reports,Quarterly,High,Determines hardware limits for single cohesive training runs,Manual
+Compute and Infrastructure,energy_constraint_twh,TWh/year,IEA Data Center Reports,Grid operator filings,Annually,High,Hard physical cap on cluster expansion speed,Manual
+Algorithmic Efficiency,algorithmic_efficiency_oom_per_year,OOM/year,Epoch Software Progress,Academic literature reviews,Annually,High,Multiplier applied to physical compute,Manual
+Algorithmic Efficiency,inference_cost_halving,Months,Epoch API pricing trackers,Cloud pricing pages,Quarterly,High,Economic friction coefficient for deploying AI researchers,Automated planned
+Algorithmic Efficiency,reasoning_token_multiplier,Ratio,Test-time compute studies,Lab technical reports,Ad-hoc,Medium,Capabilities independent of pretraining scale,Manual
+Capability Benchmarks,swe_bench_pro_score,Percentage,Scale AI Leaderboard,Vendor reports,Monthly,High,Triggers Stage 1 automated coder function,Automated planned
+Capability Benchmarks,metr_task_horizon_50,Hours,METR Time-Horizons,Independent evaluations,Quarterly,High,Log-extrapolated to one-week Stage 2 threshold,Automated planned
+Capability Benchmarks,eci_score,ECI points,Epoch Capabilities Index,Custom calculations,Monthly,High,Gompertz general capability trend,Automated planned
+AI R&D Automation,ai_rd_automation_fraction,Percentage,Proxy speedruns,Expert surveys,Bi-annually,Medium,Modulates R&D labor input term,Manual
+AI R&D Automation,rsi_initiation_threshold,Binary/Probability,Lab announcements,Open-source RSI proofs,Ad-hoc,Low,Shifts Stage 4 to Stage 5,Manual
+Deployment and Governance,export_control_delay,Months,BIS Federal Register,Trade compliance law firms,Ad-hoc,High,Additive internal-to-public delay,Manual
+Deployment and Governance,safety_pause_lag,Months,Frontier Model Forum,AISI testing guidelines,Annually,Medium,Pre-deployment red-team delay,Manual
+Outside Forecasts,metaculus_agi_median,Date,Metaculus API,Manifold/Polymarket,Weekly,Medium,Comparative validation baseline,Automated planned
+Outside Forecasts,ai_impacts_median,Year,AI Impacts surveys,80,000 Hours forecasts,Bi-annually,High,Human-prior sensitivity baseline,Manual

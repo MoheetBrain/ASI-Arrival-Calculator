@@ -1,0 +1,7 @@
+date_recorded,forecaster_name,p25_date,median_date,p75_date,definition_used
+2026-04-12,metaculus_community,2029-01-01,2033-06-01,2042-01-01,Weakly general AI
+2026-02-15,ai_impacts_expert,2030-01-01,2033-01-01,2040-01-01,Automate 90% of 2025 roles
+2026-01-15,deepmind_frontier_statement,2028-01-01,2030-01-01,2032-01-01,Minimal AGI or generally capable AI
+2026-01-15,openai_frontier_statement,2027-01-01,2028-01-01,2030-01-01,Ambiguous AGI public statement
+2025-12-01,ai_futures_model,2029-01-01,2032-01-01,2037-01-01,AI R&D automation and takeoff model
+

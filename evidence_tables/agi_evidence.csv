@@ -1,0 +1,7 @@
+source_id,date,target,claim,quantified_value,unit,confidence,notes,url
+metaculus_agi_2026,2026-04-12,weak_agi,"Community forecasts cluster around early-2030s weak/general AI definitions.",2033-06,date,medium,"Comparison only; definition is weaker than ASI.","https://www.metaculus.com/"
+ai_impacts_2026,2026-02-15,human_level_ai,"Expert surveys place substantial probability mass before 2035 for human-level or role-automation milestones.",2033-01,date,medium,"Outside forecast baseline; definitions vary.","https://wiki.aiimpacts.org/"
+cotra_bioanchors_2022,2022-01-01,tai,"Biological anchors frame transformative AI through compute-needed distributions.",1e34,FLOP,low,"Broad TAI/AGI bounding argument, not direct ASI evidence.","https://www.openphilanthropy.org/research/biological-anchors-a-trick-that-might-or-might-not-work/"
+deepmind_agi_levels_2026,2026-01-01,general_ai,"Levels-of-AGI framing separates emerging, competent, expert, virtuoso, and superhuman capabilities.",NA,qualitative,medium,"Useful for definitions, not a direct date input.","https://deepmind.google/"
+ai_futures_2025,2025-12-01,transformative_ai,"Timeline model updates shift many AGI-like milestones toward the early 2030s.",2032-01,date,medium,"Scenario model; feeds comparison and stage logic.","https://ai-futures.org/"
+

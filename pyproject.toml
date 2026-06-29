@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asi-arrival-forecast"
+version = "0.3.0"
+description = "A public Monte Carlo forecasting engine for AGI and ASI arrival months using a stage-gated AGI-to-ASI model."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "ASI Arrival Forecast contributors" }
+]
+dependencies = [
+  "numpy",
+  "pandas",
+  "pyyaml",
+  "pydantic",
+  "matplotlib",
+  "scipy"
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+plot = ["seaborn"]
+sobol = ["SALib"]
+
+[project.scripts]
+asi-forecast = "asi_forecast.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

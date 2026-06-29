@@ -1,0 +1,17 @@
+target: asi
+display_name: "Capability-and-agency ASI"
+plain_english_definition: >
+  An AI system or AI-agent system that can outperform top human teams across
+  most important cognitive work, including AI research, software engineering,
+  scientific discovery, mathematics, cybersecurity, strategy, and long-horizon
+  autonomous tasks; can generalise to novel tasks; and can pursue objectives
+  using planning, memory, tool use, self-correction, and coordination.
+key_difference_from_agi: >
+  ASI is substantially beyond top human teams, especially in AI R&D and
+  long-horizon agency. It is modeled downstream of AGI plus AI R&D automation
+  and takeoff dynamics.
+forecast_role: "Second target, conditional on AGI and the AGI-to-ASI transition."
+output_columns:
+  internal: "internal_asi_month"
+  public: "public_asi_month"
+

@@ -1,0 +1,7 @@
+source_id,date,target,claim,quantified_value,unit,confidence,notes,url
+anthropic_rsi_2026,2026-01-01,recursive_self_improvement,"RSI framing distinguishes AI-assisted research from autonomous recursive self-improvement.",12,months,medium,"Informs superhuman researcher lag, not AGI date.","https://www.anthropic.com/"
+sakanai_rsi_2026,2026-01-01,recursive_self_improvement,"Open-ended AI scientist and RSI-lab demonstrations suggest possible self-improvement architectures.",12,months,medium,"Early demonstrations are not frontier-scale ASI proof.","https://sakana.ai/"
+kwa_timelines_2026,2026-02-01,superhuman_ai_researcher,"Simpler timelines models emphasize AI R&D automation as the crucial downstream transition.",18,months,medium,"Feeds AGI-to-ASI lag assumptions.","https://www.lesswrong.com/"
+ai_futures_2025,2025-12-01,intelligence_explosion,"Takeoff models represent recursive acceleration after AI R&D automation.",18,months,medium,"Scenario-informed takeoff lag; high structural uncertainty.","https://ai-futures.org/"
+author_prior_explicit,2026-06-29,asi,"Author intuition centers ASI around July 2029 but is not blended into the empirical base case.",2029-07,date,low,"Separate scenario only; not empirical evidence.","forecast_inputs/author_prior_scenario.yaml"
+

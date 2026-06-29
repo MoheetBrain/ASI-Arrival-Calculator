@@ -1,0 +1,9 @@
+date,metric_name,value,unit,source_id,data_type
+2026-03-01,metr_task_horizon_50,14.5,hours,metr_time_horizon_2026,empirical
+2026-05-01,swe_bench_pro_score,45.9,percentage,swe_pro_deng_2025,empirical
+2026-06-01,compute_growth_x_per_year,3.4,x/year,epoch_compute_2026,empirical
+2026-06-01,algorithmic_efficiency_oom_per_year,0.5,OOM/year,epoch_algorithmic_efficiency_2026,empirical
+2026-04-01,ai_rd_automation_fraction,0.25,fraction,metr_nanogpt_2026,proxy
+2026-01-01,governance_delay_standard_mode,3,months,eo_14110_2023,policy_assumption
+2026-01-01,governance_delay_lockdown_mode,24,months,ai_diffusion_rule_2026,policy_assumption
+

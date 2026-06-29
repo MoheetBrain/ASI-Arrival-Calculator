@@ -1,0 +1,607 @@
+ASI Arrival Forecast: Comprehensive Architecture, Modeling Strategy, and Repository Implementation
+Executive Summary
+Forecasting the arrival of artificial superintelligence (ASI) requires moving beyond theoretical speculation and anchoring predictions in empirical data, structural modeling, and rigorous uncertainty quantification. The objective of this report is to architect a transparent, mathematically sound, and publicly auditable repository for the ASI Arrival Forecast project. The target variable is the first arrival date of capability-and-agency ASI, defined as an artificial intelligence or agentic system capable of outperforming top human teams across all critical cognitive workflows—including AI research, software engineering, scientific discovery, and long-horizon autonomous tasks—without the requirement of subjective consciousness.
+Recent empirical developments in 2025 and 2026 have fundamentally altered the forecasting landscape. The contamination of SWE-bench Verified, the acceleration and subsequent stabilization of autonomous task horizons, the evidence of diminishing returns in early AI R&D proxy tasks like the NanoGPT speedruns, and the implementation of United States export controls via the AI Diffusion Rule all inject complex, non-linear dynamics into ASI timelines. Furthermore, leading structural models, such as the AI Futures model and its derivatives, have recently shifted their median arrival dates toward the early 2030s by explicitly modeling the friction of recursive self-improvement and data bottlenecks.   
+To capture these dynamics accurately, this report proposes a Hybrid Structural Monte Carlo architecture. By combining explicitly specified causal stages with parameters fitted from historical time-series data, the model avoids the false precision of pure machine learning approaches while mitigating the subjective biases of manual expert estimation. The following sections provide a complete blueprint for the repository, encompassing data ingestion schemas, stage-gated mathematical architectures, statistical validation protocols, and a concrete development roadmap. The resulting framework will yield a highly resilient, dynamically updating forecast capable of delivering month-level probabilistic precision regarding the arrival of ASI.
+Recommended Model Architecture
+The optimal forecasting pipeline must sequence the development of ASI through consecutive, dependent stage-gates. Progress in AI capabilities is not a monolithic leap; rather, it is a sequential unlocking of bottlenecks where the output of one capability serves as the input to accelerate the next. The recommended architecture evaluates seven distinct stages. For each stage, the model relies on specific input variables, defined probability distributions, threshold criteria, and mathematical equations.
+Stage 1: Strong Coding Automation
+This stage measures the point at which an AI system can autonomously resolve complex, real-world software engineering issues across multiple repositories without contamination from its training data.
+Input Variables: swe_bench_pro_score (representing uncontaminated multi-language capabilities), algorithmic_efficiency_rate (measured in orders of magnitude per year), compute_growth_rate.
+Source Data: Scale AI SWE-bench Pro leaderboards, Epoch AI compute and algorithmic efficiency trackers.   
+Probability Distributions: algorithmic_efficiency_rate is modeled as a log-normal distribution (μ=0.5,σ=0.15 OOMs/year). swe_bench_pro_score improvement is modeled as a Gompertz curve, capturing rapid initial growth that slows as the benchmark nears saturation.
+Threshold Criteria: > 85% success rate on SWE-bench Pro (or an equivalent non-saturated, uncontaminated benchmark).
+Equations: Let S(t) be the score at time t (in months). The time to automation, t 
+AC
+​	
+  (Automated Coder), is solved via S(t 
+AC
+​	
+ )=0.85, where  
+dt
+dS
+​	
+ =r⋅S⋅ln( 
+S
+K
+​	
+ ), with K representing the theoretical maximum capability limit derived from effective compute.
+Uncertainty Ranges: ±18 months, driven primarily by the variance in scaffold optimization and context window constraints.
+Output Flow: t 
+AC
+​	
+  establishes the baseline starting point for the automation of internal AI R&D tasks, acting as a prerequisite for Stage 3.
+Stage 2: Long-Horizon Agent Reliability
+This stage evaluates the ability of the system to maintain coherence, correct its own errors, and navigate novel state spaces over extended periods.
+Input Variables: current_autonomous_horizon (in hours), agent_task_horizon_doubling (in months).
+Source Data: METR Time-Horizon 1.1 tracking, commercial agent runtime limits (e.g., Anthropic's 30+ hour autonomy claims).   
+Probability Distributions: agent_task_horizon_doubling is modeled as a normal distribution (μ=7.0,σ=2.0 months).   
+Threshold Criteria: Reliable completion of tasks requiring ≥168 hours (1 week) of contiguous human-equivalent labor.
+Equations: t 
+LH
+​	
+ =max(t 
+AC
+​	
+ , t 
+0
+​	
+ +log 
+2
+​	
+ ( 
+H 
+0
+​	
+ 
+168
+​	
+ )×D 
+horizon
+​	
+ ), where H 
+0
+​	
+  is the current horizon and D 
+horizon
+​	
+  is the doubling time.
+Uncertainty Ranges: 90% confidence interval spanning from a 4-month to a 12-month doubling rate.
+Output Flow: t 
+LH
+​	
+  feeds into the research threshold, as deep AI R&D requires planning and execution horizons spanning weeks.
+Stage 3: AI R&D Automation
+At this juncture, the system can automate routine experimentation, hyperparameter tuning, and kernel optimization, acting as a force multiplier for human researchers.
+Input Variables: t 
+LH
+​	
+ , ai_rd_automation_fraction, rd_diminishing_returns.
+Source Data: Proxy evidence from open-source pretraining speedruns (e.g., NanoGPT contributor analysis).   
+Probability Distributions: rd_diminishing_returns uses a Beta distribution to reflect the "apple-picking model" of AI discovery, where low-hanging optimizations are automated rapidly, but deep architectural invention requires exponentially more search.   
+Threshold Criteria: > 50% of routine AI research tasks are fully automated.
+Equations: The effective research output R(t) is a function of human labor L and AI labor. t 
+R&D
+​	
+  is reached when R 
+AI
+​	
+ (t)>R 
+Human
+​	
+ (t).
+Uncertainty Ranges: Wide variance (σ=24 months) due to the unpredictable nature of algorithmic bottlenecks versus simple coding tasks.
+Output Flow: Triggers the onset of the software intelligence explosion (Stage 5).
+Stage 4: Superhuman AI Researcher (SAR)
+This stage represents the acquisition of "research taste"—the ability to generate novel hypotheses and discard dead-ends with superhuman efficiency.
+Input Variables: t 
+R&D
+​	
+ , research_taste_acquisition_lag.
+Source Data: Anthropic RSI classifications, defining the gap between AI-assisted research and autonomous recursive self-improvement.   
+Probability Distributions: Gamma distribution for the lag, modeling the time waiting for a specific paradigm shift in agentic reasoning.
+Threshold Criteria: AI systems contribute > 95% of the algorithmic improvements in their own successors.   
+Equations: t 
+SAR
+​	
+ =t 
+R&D
+​	
+ +Gamma(k,θ).
+Uncertainty Ranges: Highly skewed distribution; quick if scale alone unlocks "taste", deeply delayed if novel architectures are required.
+Output Flow: SAR initiates exponential self-improvement.
+Stage 5: Recursive / Accelerated AI Progress
+The onset of the intelligence explosion. The AI iteratively improves its own architecture and training pipeline without waiting for human engineering cycles.
+Input Variables: t 
+SAR
+​	
+ , automation_velocity, diminishing_returns_beta, inference_cost_decline.
+Source Data: Theoretical models of AI R&D automation by Kwa and Kokotajlo.   
+Probability Distributions: Uniform distribution over the parameter space of β∈[0.3,1.0], representing the difficulty exponent for software improvement.   
+Threshold Criteria: Ten years of human-equivalent algorithmic progress compressed into one calendar month.
+Equations:  
+dt
+dC
+​	
+ =ζ 
+dt
+d(Compute)
+​	
+ +βAI_Labor(t). As inference costs drop, AI_Labor scales massively, driving C (capabilities) asymptotically upward.
+Uncertainty Ranges: The time spent in this stage (takeoff speed) ranges from weeks (fast takeoff) to years (slow takeoff bottlenecked by physical experiment compute).
+Output Flow: Culminates in capability-and-agency ASI.
+Stage 6: Internal Capability-and-Agency ASI
+The AI achieves the ultimate benchmark: outperforming top human teams across all cognitive domains, generalized to novel environments. At this point, the ASI exists on internal developer servers.
+Input Variables: Outputs of Stage 5, max_cluster_size, energy_constraints.
+Source Data: Epoch AI data center tracking, Metaculus AGI definitions.   
+Probability Distributions: Triangular distribution representing physical limits of clustering 10 
+6
+  GPUs.
+Threshold Criteria: Autonomous satisfaction of the capability-and-agency definition on private, internal evaluations.
+Equations: t 
+Internal_ASI
+​	
+ =t 
+Stage5_completion
+​	
+ +Infrastructure_Friction.
+Uncertainty Ranges: ±6 months for data center physical capex delays.
+Output Flow: Provides the primary target variable for the forecast: median_internal_asi_month.
+Stage 7: Public ASI Visibility / Deployment
+Internal systems are rarely released immediately. Governance, alignment testing, and export controls induce a deployment lag.
+Input Variables: t 
+Internal_ASI
+​	
+ , safety_pause_lag, governance_delay, export_control_friction.
+Source Data: US Executive Order 14110, AI Diffusion Rule UVEU/NVEU limits, METR monitorability evaluations.   
+Probability Distributions: governance_delay is modeled as a bimodal distribution (either brief standard red-teaming [3 months] or a severe national security lock-down [24+ months]).
+Threshold Criteria: Public accessibility via API or open-weights release.
+Equations: t 
+Public_ASI
+​	
+ =t 
+Internal_ASI
+​	
+ +D 
+safety
+​	
+ +D 
+gov
+​	
+ .
+Uncertainty Ranges: Bimodal, heavily dependent on geopolitical tensions and safety evaluation failures.
+Data Inventory Table
+To drive the structural model, the repository must actively maintain the following data inventory. Variables are categorized to isolate distinct drivers of AI progress and deployment friction.
+A. Compute and Infrastructure
+The physical capacity bounding the supply of AI capabilities and agent deployment.
+Exact Variable Name	Unit	Ideal Source	Backup Source	Update Freq	Reliability	Conversion to Model Input	Scraping Status
+training_compute_flop	FLOPs	
+Epoch AI API
+Lab technical reports	Quarterly	High	Log-transformed to base 10 for OOM calculations.	Automated
+global_compute_stock	H100-equivalents	
+Epoch GPU Clusters Data Explorer
+Financial earnings (NVDA, AMD)	Bi-annually	Medium	Bounds the maximum N agents running concurrently during RSI.	Manual
+max_cluster_size	GPUs	
+Epoch Frontier Data Centers
+Semianalysis reports	Quarterly	High	Determines hardware limitations for single cohesive training runs.	Manual
+energy_constraint_twh	TWh / year	
+IEA Data Center Reports
+Regional grid operator filings	Annually	High	Acts as a hard physical cap on cluster expansion speed.	Manual
+  
+B. Algorithmic Efficiency
+Progress achieved through architectural innovations rather than scale.
+Exact Variable Name	Unit	Ideal Source	Backup Source	Update Freq	Reliability	Conversion to Model Input	Scraping Status
+algorithmic_eff_rate	OOM / year	
+Epoch Software Progress
+Academic literature reviews	Annually	High	Multiplier applied to physical compute to yield "effective compute".	Manual
+inference_cost_halving	Months	
+Epoch API pricing trackers
+Cloud provider pricing pages	Quarterly	High	Sets the economic friction coefficient for deploying AI researchers.	Automated
+reasoning_token_multiplier	Ratio	Test-time compute studies (e.g., o1/o3)	Lab technical reports	Ad-hoc	Medium	Modulates capabilities independent of base model pre-training.	Manual
+  
+C. Capability Benchmarks
+Leading indicators of human labor replacement.
+Exact Variable Name	Unit	Ideal Source	Backup Source	Update Freq	Reliability	Conversion to Model Input	Scraping Status
+swe_bench_pro_score	Percentage	
+Scale AI Leaderboard
+Vendor self-reports	Monthly	High	Drives the probability function triggering Stage 1 (Automated Coder).	Automated
+metr_task_horizon_50	Hours	
+METR Time-Horizons
+Independent evaluations	Quarterly	High	Log-extrapolation to hit the 168-hour (1-week) Stage 2 threshold.	Automated
+eci_score	ECI Points	
+Epoch Capabilities Index
+Custom ECI calculations	Monthly	High	Aggregated trend line fitted with a Gompertz curve for general progress.	Automated
+  
+D. AI R&D Automation
+The recursive bottleneck variables determining takeoff speeds.
+Exact Variable Name	Unit	Ideal Source	Backup Source	Update Freq	Reliability	Conversion to Model Input	Scraping Status
+ai_rd_automation_frac	Percentage	
+Proxy speedruns (NanoGPT)
+Expert surveys
+Bi-annually	Medium	Modulates the labor input term in the differential capability equation.	Manual
+rsi_initiation_threshold	Binary/Prob	
+Lab announcements (Sakana, Anthropic)
+Open-source RSI proofs	Ad-hoc	Low	Shifts the model from Stage 4 (SAR) to Stage 5 (Intelligence Explosion).	Manual
+  
+E. Deployment and Governance Delay
+Frictions preventing immediate public access to ASI.
+Exact Variable Name	Unit	Ideal Source	Backup Source	Update Freq	Reliability	Conversion to Model Input	Scraping Status
+export_control_delay	Months	
+BIS Federal Register (UVEU/NVEU)
+Trade compliance law firms	Ad-hoc	High	Additive factor separating internal ASI from public deployment dates.	Manual
+safety_pause_lag	Months	Frontier Model Forum agreements	AISI testing guidelines	Annually	Medium	Additive delay term representing pre-deployment red-teaming.	Manual
+  
+F. Outside Forecasts
+Calibration metrics to contextualize the model's output.
+Exact Variable Name	Unit	Ideal Source	Backup Source	Update Freq	Reliability	Conversion to Model Input	Scraping Status
+metaculus_agi_median	Date	
+Metaculus API
+Manifold/Polymarket
+Weekly	Medium	Not structurally ingested; plotted as a comparative validation baseline.	Automated
+ai_impacts_median	Year	
+AI Impacts surveys
+80,000 Hours forecasts
+Bi-annually	High	Used to construct the human prior scenario for sensitivity testing.	Manual
+  
+Repo File-Format Schemas
+To prevent structural decay and the "garbage-in, garbage-out" phenomenon, the repository relies on rigidly defined, plain-text schema files. By using YAML for assumptions and CSV for structured data, non-experts can audit the inputs natively within the GitHub interface. Furthermore, Pydantic models in the Python pipeline will enforce type-checking and bounds-checking upon every pull request.
+1. forecast_inputs/base_forecast_inputs.yaml
+This file defines the probability distributions passed into the Monte Carlo sampler. Every parameter requires explicit bounds, a distribution type, and citations tracing back to the evidence notes.
+YAML
+version: "1.2.0"
+schema_enforcement: "strict"
+parameters:
+  swe_bench_automation_threshold:
+    description: "Score threshold on uncontaminated SWE-bench Pro signifying strong coding automation."
+    distribution: "normal"
+    mu: 0.85
+    sigma: 0.05
+    bounds: [0.75, 0.99]
+    confidence_flag: "high"
+    source_ids: ["swe_pro_deng_2025"]
+  takeoff_lag_months:
+    description: "Time delay from AI R&D automation (SAR) to Internal ASI."
+    distribution: "gamma"
+    shape_k: 2.5
+    scale_theta: 4.0
+    bounds: [2, 48]
+    confidence_flag: "low"
+    source_ids: ["kwa_timelines_2026", "apple_picking_2026"]
+Validation: A CI action must block any commit where confidence_flag is "low" but the standard deviation or bounds are overly narrow, preventing false precision in uncertain variables.
+2. evidence_tables/extracted_assumptions.csv
+This table bridges qualitative literature with quantitative inputs. It traces the origin of every mean (μ) and standard deviation (σ) used in the YAML.
+source_id	date_extracted	target_variable	extracted_claim_text	quantified_value	unit	assessor_notes
+metr_nanogpt_26	2026-06-29	ai_rd_automation_frac	"Shallow contributions drove 21x of 31x speedup, deep invention remains human."	0.25	fraction	
+Models early R&D automation plateau.
+epoch_compute_26	2026-06-29	compute_growth_rate	"Global capacity doubling every 6.8 months."	3.4	OOM/yr	
+Direct empirical observation.
+  
+3. evidence_tables/trend_inputs.csv
+A strict time-series ledger for the Bayesian parameter-fitting pipeline.
+date	metric_name	value	unit	source_id	data_type
+2026-03-01	metr_task_horizon_50	14.5	hours	metr_th1_26	empirical
+2026-05-01	swe_bench_pro_score	45.9	percentage	scale_pro_26	empirical
+4. evidence_tables/outside_forecasts.csv
+A ledger of external forecasts used solely for plotting and Brier score calibration.
+date_recorded	forecaster_name	p25_date	median_date	p75_date	definition_used
+2026-04-12	metaculus_community	2029-01-01	2033-06-01	2042-01-01	
+Weakly general AI
+2026-02-15	ai_impacts_expert	2030-01-01	2033-01-01	2040-01-01	
+Automate 90% of 2025 roles
+  
+5. evidence_notes/*.md
+These Markdown files act as detailed "Source Cards." They ensure context is not lost during data extraction. The template must include:
+Frontmatter: id, title, url, date, authors.
+Summary: A brief synopsis of the source.
+Extraction Logic: A detailed paragraph explaining how a number was derived from the text (e.g., "The Apple-Picking model implies a tortoise-hare dynamic; we model this as a Gamma-distributed delay to represent diminishing returns in R&D.").   
+Limitations & Disagreements: Noting structural flaws in the source (e.g., "SWE-bench Verified became contaminated, hence we reject Opus 4.8's 80% score as an artifact of data leakage and pivot to SWE-bench Pro.")   
+Statistical Method Recommendation
+Choosing the correct statistical architecture is the most critical decision in the repository. Evaluating an unprecedented, singular future event (the arrival of ASI) precludes methodologies reliant purely on historical training data. A comparison of the requested options is detailed below.
+Manual Expert-Assumption Monte Carlo: Rapid and highly auditable. However, it risks encoding the author's subjective priors ("I think it will take 3 years") without dynamically responding to new benchmark data.
+Bayesian Model: Excellent for updating prior beliefs with new data, but generally lacks the capacity to model multi-stage causal dependencies without complex structural networks.
+Survival / Hazard Model: Used in biostatistics for "time-to-event" forecasting. While mathematically elegant, it assumes underlying continuous risk functions that fail to capture the step-function nature of AI algorithmic breakthroughs.
+Ensemble Forecast Model: Aggregates various separate models (e.g., averaging Metaculus with Epoch trends). Good for reducing variance but lacks internal causal logic, making it a black box.
+Time-Series Extrapolation: Fits exponential or logistic curves to benchmark scores. Extremely vulnerable to paradigm shifts (e.g., test-time compute scaling altering previous scaling laws) and benchmark saturation.
+Causal Graph / Structural Model: The most intellectually rigorous, defining exact relationships (Compute → R&D → ASI). However, running deterministic structural models generates false precision without uncertainty distributions.
+ML Model Trained on Historical Benchmarks: Trains an LSTM or Transformer to predict future scores. Verdict: Overkill and fundamentally flawed. Deep learning cannot predict phase transitions (like the onset of recursive self-improvement) because there is no data of ASI in the training set (N=0).
+Fully Trained Model Predicting ASI Date: Mathematically invalid for a singular, unobserved future event.
+Hybrid Model (Manual Assumptions + Statistical Fitting): Recommended. This approach defines the causal chain manually (as a structural causal graph), allowing experts to encode logical stage-gates (e.g., you cannot have RSI before you have Automated Coders). However, the parameters governing the transition between these nodes (e.g., the exact task-horizon doubling time) are statistically fitted from the trend_inputs.csv using Bayesian inference.
+Conclusion for Repository Implementation:
+Use the Hybrid Model. In v0.1, implement a basic Structural Monte Carlo. By v0.3, introduce Bayesian updating using PyMC or SciPy curve-fitting to dynamically adjust the means (μ) and variances (σ) of the YAML parameters based on the time-series CSV data. This provides supreme auditability while remaining highly responsive to empirical shocks.
+ML vs Manual Modelling Verdict
+Question: Should I train a model for this task, or should I use a manually specified probabilistic model?
+Answer: You must strictly avoid training a machine learning model to predict the ASI date. The application of neural networks or supervised machine learning to forecast a singular, unprecedented historical singularity is an epistemological category error. There is no historical training data for "Arrival of ASI." An ML model trained on historical AI benchmarks will merely learn to extrapolate past benchmark curves, entirely failing to comprehend the systemic phase transitions introduced by recursive self-improvement or physical energy grid constraints.
+Instead, you must use a manually specified probabilistic model (Structural Monte Carlo). If statistical fitting is required, limit it to estimating specific parameters (e.g., fitting a logistic regression to METR time horizons to find the doubling rate). The overarching architecture of how those parameters interact to produce ASI must be manually encoded as mathematical equations (as outlined in the Model Architecture section).
+Monte Carlo Simulation Guidance
+Proper execution of the Monte Carlo engine is essential to prevent false precision and ensure reproducibility across disparate computational environments.
+Simulation Volume and Convergence
+10,000 simulations: Sufficient for local debugging and "fast" runs to ensure the causal logic holds.
+100,000 simulations: The ideal target. This volume stabilizes the median and accurately populates the 5th and 95th percentiles (the 90% confidence interval) without succumbing to noise in the tails.
+1 million to 2 million simulations: Unnecessary. At this scale, the computational overhead increases linearly, but the forecast accuracy does not improve. The remaining uncertainty in predicting ASI is dominated by structural epistemic uncertainty (the model equations being imperfect), not aleatoric sampling error.
+Convergence Checks: Implement Batch Means Analysis in analyze.py. Divide the 100,000 runs into 10 distinct batches of 10,000. Calculate the median ASI date for each batch. If the inter-batch variance for the median is less than 1 month, the simulation has converged.
+Managing Randomness and Scenarios
+To ensure the repository is auditable, the random seed must be explicitly controlled. Set a hardcoded seed (e.g., numpy.random.seed(42)) at the beginning of the simulation script. When external researchers clone the repository, they will generate the exact same distributions.
+When comparing scenarios (e.g., Fast Takeoff vs. Slow Takeoff), it is critical to use the exact same random seed. This isolates the variance. If you change the ai_rd_automation_lag distribution, using the same seed ensures that the observed delta in the ASI arrival date is caused solely by the parameter shift, rather than random sampling noise.
+Avoiding False Precision (Week-Level vs. Month-Level)
+A week-level forecast for an event occurring years in the future is statistically indefensible. Given that input variables possess variances spanning several months (e.g., the METR task-horizon doubling time has a 95% CI spanning from ~2 months to 20 months), projecting this compound uncertainty through a multi-stage causal graph guarantees an output distribution spanning multiple years. Presenting a median to the precision of a specific week falsely implies an understanding of micro-dynamics that do not exist in the model.   
+Guidance: Month-level forecasting is the absolute maximum honest precision. The repository should round all final output variables to the nearest month (YYYY-MM) and explicitly disclaim that this precision is utilized primarily to visualize smooth probability density curves, not to assert absolute temporal certainty.
+Sensitivity Analysis and Validation Plan
+A forecast is only as robust as its validation protocols. To prevent the model from operating as a black box that merely obfuscates the author's priors, implement the following analytical tools using Python libraries such as SALib and scikit-learn.
+Variance-Based Sensitivity (Sobol Indices): Use SALib to calculate total-order Sobol indices. This answers the critical question: "What percentage of the variance in the ASI arrival date is caused by hardware scaling versus algorithmic efficiency?" Unlike simple correlation, Sobol analysis captures non-linear interactions between variables (e.g., how the AI R&D bottleneck interacts with physical compute limits).
+Monotonic Sensitivity (Spearman Rank Correlation): Calculate the Spearman correlation coefficient between every input distribution and the final output date. Present this data as a Tornado Plot in the repository's main README.md. This visually ranks the top 10 forecast drivers, immediately showing observers where the model is most sensitive.
+Backtesting against Historical Milestones: Extract the historical state of variables from January 2024. Run the model forward to predict the capability levels of mid-2026. If the model fails to retrodict the achievement of Claude 3.5 Sonnet or the 31x NanoGPT speedrun, its forward-looking ASI predictions are structurally flawed.   
+Calibration and Brier Scores: Formulate near-term micro-forecasts derived from the model (e.g., "Probability that SWE-bench Pro exceeds 60% by December 2026"). As these dates pass, calculate the Brier score of the model's probabilities. Over time, this proves whether the model is well-calibrated (scoring close to 0) or overly confident.
+Detecting Encoded Priors: Run a null-hypothesis scenario where all parameters are set to uniform distributions with maximum bounds. If the model still outputs the author's preferred timeline, the structural equations themselves are biased.
+Public Claim Wording and Prior Intuition
+The user holds an intuitive prior that ASI may arrive around July 2029. Directly engineering the model to output this date corrupts the empirical integrity of the repository, turning it into an exercise in motivated reasoning.
+To publish the prior honestly, separate the "Author Prior" from the "Empirical Base Case". Maintain the base_forecast_inputs.yaml strictly via data extracted from the trend_inputs.csv and extracted_assumptions.csv. Then, create a separate file, forecast_inputs/author_prior_scenario.yaml, which explicitly documents the specific parameters required to achieve a July 2029 median. The model must be allowed to disagree with the author. If the empirical data pushes the median to 2031, the resulting graphs should plot both probability density curves side-by-side, visually articulating the delta between intuition and evidence.
+Desired Public Phrasing Style:
+"Based on the hybrid structural extrapolation of current compute scaling, algorithmic efficiency, and task-horizon benchmarks, the current median Empirical Forecast for internal capability-and-agency ASI is October 2031, with a 50% interval of [March 2030 – August 2033] and a 90% interval of [December 2028 – May 2037]. Public visibility of ASI is forecast for April 2032, accounting for an estimated 6-month governance and deployment delay. Separately, the Author's Intuitive Prior scenario yields a median of July 2029. Both outputs are generated dynamically under the assumptions explicitly documented and version-controlled in base_forecast_inputs.yaml (v1.2.4)."
+Development Roadmap
+The repository should be developed sequentially to ensure functional stability before introducing complex statistical layers.
+v0.1: Minimum Viable Forecast
+Files: src/model.py, src/simulate.py, hardcoded Python dictionaries for inputs.
+Outputs: Basic terminal printout of the median ASI date and a raw Matplotlib histogram.
+Tests: Unit tests ensuring the 7 mathematical stage-gate equations do not return NaN or negative time values.
+Done Definition: The script executes end-to-end, running 10,000 Monte Carlo loops and returning a date, without external file parsing.
+v0.2: Data Integration and Schemas
+Files: Create forecast_inputs/base_forecast_inputs.yaml, src/load_data.py. Implement Pydantic for strict schema validation.
+Outputs: The model successfully reads distributions from the YAML file.
+Tests: YAML validation tests to reject missing confidence_flag or source_ids fields.
+Done Definition: The model's outputs update dynamically simply by changing values in the YAML file. First Tornado plots (Spearman correlation) generated.
+v0.3: Backtesting and Convergence
+Files: Add tests/test_convergence.py and tests/test_retrodiction.py. Scale the simulation engine to 100,000 runs using vectorized NumPy operations.
+Outputs: CI/CD pipeline outputs a report confirming batch-means convergence under 1 month.
+Tests: Implement the historical backtest. If the model cannot predict 2025 milestones from 2023 data, the CI pipeline fails.
+Done Definition: The model is statistically stable, reproducible across machines via fixed seeds, and mathematically validated against past events.
+v0.4: Scenario Engine and Outside Forecasts
+Files: Add evidence_tables/outside_forecasts.csv, forecast_inputs/author_prior_scenario.yaml, src/plot.py.
+Outputs: Advanced Seaborn/Matplotlib charts plotting the Empirical Base Case, the Author Prior, and Metaculus external aggregates on a single timeline axis.
+Tests: Scenario switching tests to ensure parameter overrides apply cleanly without cross-contamination.
+Done Definition: The repository visually articulates the difference between data-driven models, human intuition, and crowdsourced markets.
+v1.0: Publishable Research Version
+Files: Finalize README.md, research_note/whitepaper.md, requirements.txt.
+Outputs: A fully documented repository with Zenodo integration for DOI minting.
+Tests: Full dependency freeze and environment replication tests (e.g., Dockerization).
+Done Definition: The repository is ready for public promotion; a third-party researcher can clone the repo and run python run_forecast.py to seamlessly reproduce the exact charts and ASI dates cited in the README.md.
+Top 20 Sources to Include
+The repository must ingest the strongest quantitative evidence available. The following table details the primary sources to be parsed into the evidence_notes and extracted_assumptions.csv.
+Source & Citation	Date	Key Claims	Target Model Variable	Confidence & Limitations	Inclusion Verdict
+Epoch AI: Compute Trends
+Jun 2026	Compute capacity doubling every 6.8 months (3.4x/year).	compute_growth_rate	High. Derived from hardware sales. Limits: Ignores novel chip architectures.	Essential baseline.
+Epoch AI: Algorithmic Efficiency
+Jun 2026	Pre-training efficiency improves by 3.0x/year (~0.5 OOMs/yr).	algorithmic_efficiency_rate	High. Historical tracking. Limits: Saturates if paradigms shift.	Essential baseline.
+METR: Time-Horizon 1.1
+Jan 2026	Task horizons (50% reliability) double every 7 months.	agent_task_horizon_doubling	High. Human-baselined. Limits: Varies across cognitive domains.	Primary capability metric.
+SWE-bench Pro Evaluation
+Feb 2026	SWE-bench Verified was contaminated. SWE-bench Pro is the new 1,865-task uncontaminated standard.	swe_bench_pro_score	High. Standardized. Limits: May require further scaling as models grow.	Primary coding milestone.
+METR: NanoGPT Speedrun
+Apr 2026	Agents contributed to a 31x speedup but focus on shallow hyperparameter sweeps; deep invention remains human.	ai_rd_automation_frac	Medium. Proxy pretraining environment. Limits: Survivorship bias.	Proxy for early R&D bottleneck.
+Apple-Picking Model (Cunningham)
+Mar 2026	Agents push the R&D frontier forward but hit diminishing returns quickly (tortoise-hare dynamics).	rd_diminishing_returns	Medium. Theoretical framing. Limits: Assumes independent task probabilities.	Models R&D diminishing returns.
+AI Futures Model (Kokotajlo)
+Dec 2025	Shifts median AGI arrival to ~2030s due to data bottlenecks and slower coding automation.	coding_automation_threshold	Medium. Strong logic. Limits: Highly sensitive to data assumptions.	Informs stage-gate logic.
+Simpler AI Timelines Model (Kwa)
+Feb 2026	8-parameter model predicts >99% AI R&D automation by late 2032.	automation_velocity	Medium. Conservative framing. Limits: Conflates research taste with coding.	Provides R&D automation equations.
+DeepMind: 5 Levels of AGI
+2023-2026	Establishes levels of capability; current models are Level 1 (emergent).	eci_score contextualization	High. Theoretical framework. Limits: Qualitative framing.	Defines stage milestones.
+Anthropic: RSI Research Report
+2025-2026	Distinguishes AI-assisted research from full autonomous recursive self-improvement.	research_taste_acquisition_lag	Medium. Lab internal views. Limits: Accelerated timelines assume scaling continues.	Separates R&D from full RSI.
+Sakana AI: RSI & AI Scientist
+2025-2026	Demonstrates open-ended architectures that collectively self-improve efficiently.	algorithmic_efficiency_rate (post-SAR)	Medium. Early proofs. Limits: Not proven at frontier foundation scale.	Models efficient RSI.
+US AI Diffusion Rule
+Jan 2026	Restricts advanced chips. Creates UVEU/NVEU tiers for data center compute globally.	global_compute_stock	High. Legal reality. Limits: Circumvention and smuggling.	Global compute limits.
+US Executive Order 14110 & States
+2023-2026	Tracks models crossing 10 
+26
+  FLOPs. Illustrates patchwork governance.	governance_delay	High. Policy baseline. Limits: High political volatility.	Models public deployment delay.
+METR: Monitorability Evals
+2025-2026	Models struggle to evade monitors but can hide side-tasks.	safety_pause_lag	Medium. Prototype red-teaming. Limits: Fast-moving evaluation metrics.	Models alignment-driven delays.
+Epoch: Capabilities Index (ECI)
+2025-2026	Composite metric aggregating benchmark performance to combat saturation.	eci_score	High. Reduces single-benchmark variance. Limits: Backward-looking.	Trend extrapolation.
+Metaculus: AGI Forecasts
+Apr 2026	Median AGI arrival predicted between 2031 and 2033.	metaculus_agi_median	Medium. Crowdsourced. Limits: Highly reactive to news cycles.	External calibration.
+AI Impacts: Existential Security Survey
+Feb 2026	73% of elite experts assign ≥ 50% chance of AGI by 2035.	ai_impacts_median	Medium. Elite sample. Limits: Physical labor requirements extend timelines.	External calibration.
+OpenAI: Frontier Statements (Altman)
+2025-2026	Claims confidence in building AGI; predicts arrival ~2028.	lab_leader_forecast	Low. Corporate marketing. Limits: Ambiguous AGI definitions.	Qualitative bounds.
+DeepMind: Frontier Statements (Hassabis)
+Jan 2026	Predicts AGI around 2030 (3-5 years away); minimal AGI by 2028.	lab_leader_forecast	Medium. Consistent track record. Limits: Minimal AGI differs from ASI.	Qualitative bounds.
+Bio Anchors (Cotra)
+2020-2022	Anchors AGI to human brain FLOPs (10 
+32
+  to 10 
+37
+ ).	baseline_agi_flop_requirement	Low/Medium. Historical baseline. Limits: Biology maps poorly to synthetic logic.	Fundamental bounding parameters.
+  
+Immediate Next 10 Tasks for the Repository
+Initialize the GitHub repository structure mimicking the specified folder paths (forecast_inputs/, evidence_tables/, src/asi_forecast/).
+Draft the base_forecast_inputs.yaml schema using Pydantic in Python to enforce exact bounds on the extracted values.
+Populate evidence_tables/extracted_assumptions.csv with the quantitative limits from the Top 20 sources (e.g., METR's 7-month horizon doubling rate).
+Write src/asi_forecast/model.py to encode the 7 stage-gate mathematical equations outlined in the architecture section.
+Write src/asi_forecast/simulate.py implementing a vectorized NumPy Monte Carlo engine with a fixed random seed for reproducibility.
+Write src/asi_forecast/analyze.py to calculate the median, 50% intervals, and 90% intervals from the raw simulation arrays.
+Integrate the SALib library into analyze.py to compute Sobol indices and Spearman rank correlations for the input variables.
+Write src/asi_forecast/plot.py using Seaborn to generate probability density functions (PDFs) and Tornado plots for sensitivity analysis.
+Create forecast_inputs/author_prior_scenario.yaml to decouple the author's intuitive 2029 prior from the empirical base case.
+Draft the README.md, incorporating the desired "Public Claim Wording" and visualizing the delta between the empirical model and external Metaculus forecasts.
+This is for informational purposes only. For medical advice or diagnosis, consult a professional.
+
+codingfleet.com
+SWE-bench Pro Explained: The New Standard for AI Coding Benchmarks (2026)
+Opens in a new window
+
+lesswrong.com
+METR: How Does Time Horizon Vary Across Domains? - LessWrong
+Opens in a new window
+
+metr.org
+Evidence on AI R&D Progress from NanoGPT - METR
+Opens in a new window
+
+tecunningham.github.io
+An Apple-Picking Model of AI R&D - Tom Cunningham
+Opens in a new window
+
+cfr.org
+What to Know About the New U.S. AI Diffusion Policy and Export Controls
+Opens in a new window
+
+lesswrong.com
+Clarifying how our AI timelines forecasts have changed since AI 2027 - LessWrong
+Opens in a new window
+
+lesswrong.com
+Research note: A simpler AI timelines model predicts 99% AI R&D automation in ~2032
+Opens in a new window
+
+epoch.ai
+Epoch AI 2025 impact report
+Opens in a new window
+
+epoch.ai
+Epoch AI
+Opens in a new window
+
+metr.org
+Task-Completion Time Horizons of Frontier AI Models - METR
+Opens in a new window
+
+metr.org
+Time Horizon 1.1 - METR
+Opens in a new window
+
+teamai.com
+Best AI Models for Coding in 2026: Claude, Codex & Gemini Compared - TeamAI
+Opens in a new window
+
+lesswrong.com
+METR: Measuring AI Ability to Complete Long Tasks - LessWrong
+Opens in a new window
+
+manishs.org
+Evidence on AI R&D Progress from NanoGPT - Manish Shetty
+Opens in a new window
+
+primeintellect.ai
+Autonomous AI research for nanogpt speedrun - Prime Intellect
+Opens in a new window
+
+anthropic.com
+When AI builds itself - Anthropic
+Opens in a new window
+
+mindstudio.ai
+What Is Recursive Self-Improvement in AI? Anthropic's RSI Report Explained - MindStudio
+Opens in a new window
+
+github.com
+ai-takeoff-model/README.md at main - GitHub
+Opens in a new window
+
+ai-2027.com
+AI 2027
+Opens in a new window
+
+lesswrong.com
+AI Futures Timelines and Takeoff Model: Dec 2025 Update - LessWrong
+Opens in a new window
+
+alignmentforum.org
+Research note: A simpler AI timelines model predicts 99% AI R&D automation in ~2032
+Opens in a new window
+
+quantumrun.com
+Will AI Take Over the World - Quantumrun
+Opens in a new window
+
+whitehouse.gov
+Promoting Advanced Artificial Intelligence Innovation and Security - The White House
+Opens in a new window
+
+en.wikipedia.org
+Regulation of artificial intelligence in the United States - Wikipedia
+Opens in a new window
+
+onelexpartners.com
+U.S. AI Export Controls in 2026: A Practitioner's Guide - One Lex Partners
+Opens in a new window
+
+metr.org
+Notes - METR
+Opens in a new window
+
+epoch.ai
+Data on the Trajectory of AI | Epoch AI Database
+Opens in a new window
+
+epoch.ai
+Data on AI Capabilities and Benchmarking - Epoch AI
+Opens in a new window
+
+forum.effectivealtruism.org
+Survey of AI safety leaders on x-risk, AGI timelines, and resource allocation (Feb 2026)
+Opens in a new window
+
+sakana.ai
+Introducing Sakana AI's Recursive Self-Improvement (RSI) Lab
+Opens in a new window
+
+federalregister.gov
+Framework for Artificial Intelligence Diffusion - Federal Register
+Opens in a new window
+
+aimultiple.com
+AGI/Singularity: 9,800 Predictions Analyzed - AIMultiple
+Opens in a new window
+
+metaculus.com
+When will the first general AI system be devised, tested, and publicly announced? - Metaculus
+Opens in a new window
+
+longtermwiki.com
+AI Impacts | Longterm Wiki
+Opens in a new window
+
+ourworldindata.org
+AI timelines: What do experts in artificial intelligence expect for the future?
+Opens in a new window
+
+80000hours.org
+Will we have AGI by 2030? | 80,000 Hours
+Opens in a new window
+
+lesswrong.com
+Thomas Kwa's Shortform - LessWrong
+Opens in a new window
+
+ai2027-tracker.com
+SWE-bench-Verified score reaches 85% - AI 2027 Tracker
+Opens in a new window
+
+delos.so
+AGI: Myth or Reality? State of the Art in 2026 - by Delos
+Opens in a new window
+
+metr.org
+Research - METR
+Opens in a new window
+
+lumichats.com
+AGI Timeline 2026: What Altman, Musk & Amodei Actually Predict (And What It Means for You) | LumiChats
+Opens in a new window
+
+zmescience.com
+DeepMind's CEO Says AGI Could Arrive Around 2030. The Scary Part Is How Unready We Are - ZME Science
+Opens in a new window
+
+astralcodexten.com
+What Happened With Bio Anchors? - by Scott Alexander - Astral Codex Ten
+Opens in a new window
+
+epoch.ai
+Grokking “Forecasting TAI with biological anchors” | Epoch AI
+Opens in a new window
+
+ui.stampy.ai
+What is the "biological anchors" framework? - AISafety.info

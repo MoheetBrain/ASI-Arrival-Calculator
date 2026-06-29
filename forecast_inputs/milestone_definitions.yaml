@@ -1,0 +1,68 @@
+strong_coding_automation:
+  plain_english_definition: "AI systems can autonomously complete complex software engineering tasks across real repositories."
+  measurable_indicators:
+    - "Uncontaminated SWE-bench-style performance"
+    - "Multi-file coding and debugging reliability"
+    - "Ability to complete tasks measured in hundreds of human-hours"
+  threshold_logic: "Sample when autonomous task horizon crosses the coding automation threshold."
+  evidence_category: "intermediate"
+  notes_on_uncertainty: "Coding benchmarks can be contaminated or saturated, so this is not treated as direct AGI or ASI proof."
+
+long_horizon_agent_reliability:
+  plain_english_definition: "AI agents can sustain coherent work over long tasks with planning, tool use, and self-correction."
+  measurable_indicators:
+    - "METR-style task horizon"
+    - "Reliable multi-hour or multi-day autonomous task completion"
+  threshold_logic: "Sample when the current task horizon reaches a one-week human-equivalent task horizon."
+  evidence_category: "intermediate"
+  notes_on_uncertainty: "Reliability varies by domain and scaffolding; benchmark horizon is only a proxy."
+
+agi:
+  plain_english_definition: "Broadly human-level or expert-level general cognitive capability across economically valuable tasks."
+  measurable_indicators:
+    - "Strong coding automation"
+    - "Long-horizon agent reliability"
+    - "Broad general capability beyond coding"
+  threshold_logic: "AGI occurs after coding automation, long-horizon reliability, and general capability have all crossed their sampled thresholds."
+  evidence_category: "agi"
+  notes_on_uncertainty: "Most external forecasts are closer to this target than to ASI."
+
+ai_rnd_automation:
+  plain_english_definition: "AI systems substantially automate routine AI research and development workflows."
+  measurable_indicators:
+    - "Automated experimentation"
+    - "Hyperparameter and kernel optimization"
+    - "Research-assistant productivity in frontier labs"
+  threshold_logic: "Sample a lag after AGI before AI R&D automation is operational."
+  evidence_category: "intermediate"
+  notes_on_uncertainty: "Evidence from coding and NanoGPT-style tasks is suggestive but not proof of deep research automation."
+
+superhuman_ai_researcher:
+  plain_english_definition: "AI systems acquire research taste: generating useful hypotheses and avoiding dead ends better than top human researchers."
+  measurable_indicators:
+    - "Novel algorithmic contributions"
+    - "Autonomous research program execution"
+    - "Successor-model improvement without human bottlenecks"
+  threshold_logic: "Sample a lag after AI R&D automation."
+  evidence_category: "asi"
+  notes_on_uncertainty: "This may arrive quickly if scale unlocks it, or much later if new architectures are required."
+
+internal_asi:
+  plain_english_definition: "Capability-and-agency ASI exists inside a lab, company, government, or restricted deployment."
+  measurable_indicators:
+    - "Beyond top human teams across core cognitive work"
+    - "Superhuman AI R&D"
+    - "Long-horizon agency in novel environments"
+  threshold_logic: "AGI plus AI R&D automation lag, superhuman researcher lag, takeoff lag, infrastructure friction, and governance delay."
+  evidence_category: "asi"
+  notes_on_uncertainty: "Internal capability may precede public visibility by months or years."
+
+public_asi:
+  plain_english_definition: "Capability comparable to internal ASI is publicly visible or broadly accessible."
+  measurable_indicators:
+    - "Public API access"
+    - "Open-weight release"
+    - "Widely observed capabilities"
+  threshold_logic: "Internal ASI plus sampled public deployment delay."
+  evidence_category: "governance"
+  notes_on_uncertainty: "Deployment can be delayed by safety testing, policy, secrecy, or national-security restrictions."

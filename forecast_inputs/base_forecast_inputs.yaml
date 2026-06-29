@@ -1,0 +1,119 @@
+simulation:
+  start_month: "2026-06"
+  default_sims: 100000
+  random_seed: 42
+  convergence_batches: 10
+
+author_prior:
+  agi_median_month: null
+  asi_median_month: "2029-07"
+  weight: 0.0
+  note: "Author prior is documented but not blended into the empirical base forecast by default."
+
+agi_stage:
+  effective_compute_growth_x_per_year:
+    distribution: triangular
+    low: 2.0
+    mode: 3.4
+    high: 6.0
+    unit: x/year
+    evidence_category: intermediate
+
+  algorithmic_efficiency_x_per_year:
+    distribution: triangular
+    low: 1.5
+    mode: 3.0
+    high: 10.0
+    unit: x/year
+    evidence_category: intermediate
+
+  agent_time_horizon_doubling_months:
+    distribution: triangular
+    low: 4
+    mode: 7
+    high: 14
+    unit: months
+    evidence_category: intermediate
+
+  current_agent_task_horizon_hours:
+    distribution: triangular
+    low: 2
+    mode: 8
+    high: 40
+    unit: hours
+    evidence_category: intermediate
+
+  coding_automation_threshold_human_hours:
+    distribution: triangular
+    low: 160
+    mode: 320
+    high: 1000
+    unit: human-hours
+    evidence_category: intermediate
+
+  general_capability_lag_after_coding_months:
+    distribution: triangular
+    low: 0
+    mode: 9
+    high: 36
+    unit: months
+    evidence_category: agi
+
+  agi_integration_lag_months:
+    distribution: triangular
+    low: 0
+    mode: 6
+    high: 18
+    unit: months
+    evidence_category: agi
+
+asi_stage:
+  ai_rnd_automation_lag_after_agi_months:
+    distribution: triangular
+    low: 3
+    mode: 12
+    high: 36
+    unit: months
+    evidence_category: intermediate
+
+  superhuman_ai_researcher_lag_months:
+    distribution: triangular
+    low: 0
+    mode: 12
+    high: 48
+    unit: months
+    evidence_category: asi
+
+  takeoff_lag_months:
+    distribution: triangular
+    low: 3
+    mode: 18
+    high: 72
+    unit: months
+    evidence_category: asi
+
+  infrastructure_friction_months:
+    distribution: triangular
+    low: 0
+    mode: 6
+    high: 24
+    unit: months
+    evidence_category: intermediate
+
+deployment_stage:
+  governance_delay_months:
+    distribution: triangular
+    low: 0
+    mode: 3
+    high: 24
+    unit: months
+    evidence_category: governance
+
+  deployment_delay_internal_to_public_months:
+    distribution: triangular
+    low: 0
+    mode: 6
+    high: 36
+    unit: months
+    evidence_category: governance
+

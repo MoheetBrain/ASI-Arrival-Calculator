@@ -1,0 +1,14 @@
+target: agi
+display_name: "AGI / Transformative General AI"
+plain_english_definition: >
+  An AI system that can perform or automate a very wide range of economically
+  valuable cognitive tasks at approximately top-human or expert-human level,
+  including software engineering, analysis, research assistance, planning,
+  computer use, and general problem-solving across novel domains.
+key_difference_from_asi: >
+  AGI is broadly human-level or expert-level general capability. It does not
+  require being substantially beyond top human teams across the most important
+  cognitive domains.
+forecast_role: "First target in the stage-gated AGI-to-ASI forecasting pipeline."
+output_column: "agi_month"
+
