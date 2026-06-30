@@ -20,6 +20,35 @@ AGI means broad human-level or expert-level general cognitive capability across 
 
 Capability-and-agency ASI means substantially beyond top human teams across the most important cognitive domains, with long-horizon agency and especially superhuman AI R&D capability.
 
+## Refined 7-Checkpoint Capability Ladder
+
+The model uses a 7-checkpoint capability ladder as a qualitative screen for
+new evidence. The ladder is not a fourth forecast target. It helps classify
+whether a new result should primarily update AGI timing, the AGI-to-ASI lag,
+AI R&D automation, infrastructure friction, recursive-progress assumptions, or
+the internal ASI threshold.
+
+```mermaid
+graph TD
+    classDef step fill:#f5f5f5,stroke:#1565c0,stroke-width:2px,color:#000
+    CP1[1. Contextual Invariance]:::step --> CP2[2. Formal Verification]:::step
+    CP2 --> CP3[3. Horizon-Unbounded Agency]:::step
+    CP3 --> CP4[4. Exascale Infrastructure]:::step
+    CP4 --> CP5[5. Recursive Iteration]:::step
+    CP5 --> CP6[6. Meta-Architectural Optimization]:::step
+    CP6 --> CP7[7. Asymmetric Divergence]:::step
+```
+
+| Checkpoint | Refined metric | Main model implication |
+|---|---|---|
+| Contextual Invariance | Lossless semantic retrieval across a continuous 10^8-token context with less than 0.01% needle-in-a-haystack decay. | Updates long-horizon reliability and AGI integration assumptions. |
+| Autonomous Formal Verification | Closed-loop proof generation for an unverified conjecture or non-trivial software kernel in a verified proof assistant, with zero human prompting. | Updates general capability, AI R&D automation, and superhuman AI researcher lags. |
+| Horizon-Unbounded Agency | A 336-hour production run across cross-domain engineering objectives with dynamic self-correction and 0% fatal exceptions. | Updates agent task horizon and autonomous engineering thresholds. |
+| Exascale Infrastructure Hardening | Orchestration of a distributed optical cluster drawing >=1.2 GW, with >99.99% utilization and 30-day fault-tolerant checkpointing. | Updates compute growth, infrastructure friction, and governance constraints. |
+| Recursive Synthetic Iteration | Five generations of monotonic gains from fully synthetic data loops without model collapse. | Updates takeoff lag and algorithmic efficiency assumptions. |
+| Meta-Architectural Optimization | Automated validation of a new architecture or training paradigm that reduces FLOPs by >=10% against state-of-the-art baselines. | Updates algorithmic efficiency and superhuman AI researcher assumptions. |
+| Asymmetric Takeoff Divergence | Cross-domain capability accumulation faster than 100x the cumulative human engineering baseline per hour. | Updates takeoff dynamics and the internal ASI threshold. |
+
 ## Evidence Classification
 
 Evidence is split into:

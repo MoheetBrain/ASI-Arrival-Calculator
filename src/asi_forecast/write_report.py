@@ -121,6 +121,21 @@ def _convergence_text(frame: pd.DataFrame | None) -> str:
     )
 
 
+def _capability_ladder_text() -> str:
+    """Return the qualitative capability ladder used to interpret evidence."""
+    return """The 7-checkpoint capability ladder is a qualitative screen, not a separate forecast target. It helps decide whether new evidence should update AGI timing, AGI-to-ASI transition lags, infrastructure friction, AI R&D automation, recursive-progress assumptions, or the internal ASI threshold.
+
+| Checkpoint | Refined metric | Main model implication |
+|---|---|---|
+| Contextual Invariance | Lossless semantic retrieval across a continuous 10^8-token context with less than 0.01% needle-in-a-haystack decay. | Long-horizon reliability and AGI integration. |
+| Autonomous Formal Verification | Closed-loop proof generation for an unverified conjecture or non-trivial software kernel in a verified proof assistant, with zero human prompting. | General capability, AI R&D automation, and superhuman AI researcher lags. |
+| Horizon-Unbounded Agency | A 336-hour production run across cross-domain engineering objectives with dynamic self-correction and 0% fatal exceptions. | Agent task horizon and autonomous engineering thresholds. |
+| Exascale Infrastructure Hardening | Orchestration of a distributed optical cluster drawing >=1.2 GW, with >99.99% utilization and 30-day fault-tolerant checkpointing. | Compute growth, infrastructure friction, and governance constraints. |
+| Recursive Synthetic Iteration | Five generations of monotonic gains from fully synthetic data loops without model collapse. | Takeoff lag and algorithmic efficiency. |
+| Meta-Architectural Optimization | Automated validation of a new architecture or training paradigm that reduces FLOPs by >=10% against state-of-the-art baselines. | Algorithmic efficiency and superhuman AI researcher assumptions. |
+| Asymmetric Takeoff Divergence | Cross-domain capability accumulation faster than 100x the cumulative human engineering baseline per hour. | Takeoff dynamics and the internal ASI threshold. |"""
+
+
 def markdown_report(
     summary: pd.DataFrame,
     sensitivity: pd.DataFrame,
@@ -199,6 +214,10 @@ Most public evidence is about AGI, coding agents, compute, benchmarks, and AI R&
 The median is the 50/50 month: half of simulated futures arrive before it, and half arrive after it. The 50% interval contains the middle half of simulations. The 90% interval contains the central 90% of simulations.
 
 More simulations reduce numerical noise. They do not make bad assumptions true.
+
+## Capability Ladder Context
+
+{_capability_ladder_text()}
 
 ## Convergence
 

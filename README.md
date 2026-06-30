@@ -44,6 +44,75 @@ public ASI
 
 The model does **not** treat AGI evidence as direct ASI evidence.
 
+## Refined 7-Checkpoint Capability Ladder
+
+The project also uses a refined 7-checkpoint capability ladder as a qualitative
+screen for interpreting new evidence. The ladder is not a separate forecast
+target. It helps decide whether an observation should update AGI timing,
+AGI-to-ASI transition lags, infrastructure friction, AI R&D automation, or the
+internal ASI threshold.
+
+```mermaid
+graph TD
+    classDef step fill:#f5f5f5,stroke:#1565c0,stroke-width:2px,color:#000
+    CP1[1. Contextual Invariance]:::step --> CP2[2. Formal Verification]:::step
+    CP2 --> CP3[3. Horizon-Unbounded Agency]:::step
+    CP3 --> CP4[4. Exascale Infrastructure]:::step
+    CP4 --> CP5[5. Recursive Iteration]:::step
+    CP5 --> CP6[6. Meta-Architectural Optimization]:::step
+    CP6 --> CP7[7. Asymmetric Divergence]:::step
+```
+
+1. **Contextual Invariance (memory)**  
+   Metric: lossless, deterministic semantic retrieval across a continuous
+   10^8-token context window, with less than 0.01% performance decay in
+   needle-in-a-haystack tracking.  
+   Why it matters: eliminates state drift across full codebases, scientific
+   literatures, enterprise logs, and long execution loops.
+
+2. **Autonomous Formal Verification (math)**  
+   Metric: independent, closed-loop formalization and proof generation for an
+   unverified mathematical conjecture or non-trivial software kernel using a
+   verified proof assistant such as Lean 4, with zero human prompting.  
+   Why it matters: creates a hard gate for verified reasoning and reduces human
+   review as a bottleneck for trustworthy code and logic changes.
+
+3. **Horizon-Unbounded Agency (agency)**  
+   Metric: sustained, continuous execution of multi-turn, cross-domain
+   engineering objectives across a 336-hour (14-day) production run, with
+   dynamic self-correction, tool use, and a 0% fatal exception rate.  
+   Why it matters: moves the system from assistant behavior toward autonomous
+   employee behavior on large research and engineering projects.
+
+4. **Exascale Infrastructure Hardening (compute)**  
+   Metric: sustained orchestration of a single distributed optical cluster
+   drawing >=1.2 GW of power, maintaining >99.99% hardware utilization and
+   fault-tolerant state checkpointing over a 30-day training window.  
+   Why it matters: shows that scaling is no longer just model-side capability;
+   it is industrial-scale compute, power, and reliability control.
+
+5. **Recursive Synthetic Iteration (data)**  
+   Metric: monotonic, measurable capability gains across five consecutive
+   generations of fully synthetic, model-generated data loops, without model
+   collapse.  
+   Why it matters: breaks the bottleneck imposed by finite human-generated
+   training data.
+
+6. **Meta-Architectural Optimization (R&D)**  
+   Metric: automated design, compilation, and algorithmic validation of a novel
+   neural architecture or training paradigm that delivers a >=10% compute
+   efficiency gain, measured as FLOP reduction against state-of-the-art
+   baselines.  
+   Why it matters: turns AI into a direct AI R&D accelerator by finding
+   structural efficiencies humans missed.
+
+7. **Asymmetric Takeoff Divergence (takeoff)**  
+   Metric: cross-domain capability accumulation velocity exceeding 100x the
+   cumulative human engineering baseline per hour, driven by autonomous,
+   multi-tiered recursive self-improvement loops.  
+   Why it matters: identifies the regime where calendar time stops being a good
+   proxy for capability change.
+
 ## What Monte Carlo Means
 
 Monte Carlo means running thousands or millions of possible futures by sampling uncertain inputs.
@@ -80,6 +149,7 @@ Important files:
 - [forecast_inputs/agi_definition.yaml](forecast_inputs/agi_definition.yaml): AGI definition.
 - [forecast_inputs/asi_definition.yaml](forecast_inputs/asi_definition.yaml): ASI definition.
 - [forecast_inputs/milestone_definitions.yaml](forecast_inputs/milestone_definitions.yaml): stage-gate definitions.
+- [forecast_inputs/capability_ladder.yaml](forecast_inputs/capability_ladder.yaml): qualitative 7-checkpoint capability ladder.
 - [evidence_tables/agi_evidence.csv](evidence_tables/agi_evidence.csv): AGI/TAI evidence.
 - [evidence_tables/asi_evidence.csv](evidence_tables/asi_evidence.csv): ASI/takeoff evidence.
 - [evidence_tables/intermediate_milestones.csv](evidence_tables/intermediate_milestones.csv): compute, coding, agents, AI R&D automation, and governance inputs.
@@ -141,4 +211,3 @@ Generated results are ignored by git by default.
 Experimental research prototype. Not investment, legal, policy, or safety advice.
 
 This repo is designed to be inspectable and editable. It should be judged by whether its assumptions are visible, its evidence is classified honestly, and its outputs do not overclaim.
-

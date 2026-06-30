@@ -1,0 +1,143 @@
+name: "Refined 7-Checkpoint Capability Ladder"
+purpose: >
+  A qualitative evidence screen for deciding whether observed systems are merely
+  stronger AGI candidates or are approaching capability-and-agency ASI.
+relationship_to_model: >
+  The ladder does not add a fourth forecast target. It clarifies which observable
+  checkpoints should update AGI timing, AGI-to-ASI transition lags, infrastructure
+  friction, AI R&D automation, recursive-progress assumptions, and the internal
+  ASI threshold.
+checkpoints:
+  - id: "CP1"
+    order: 1
+    name: "Contextual Invariance"
+    capability_area: "memory"
+    refined_metric: >
+      Lossless, deterministic semantic retrieval across a continuous 10^8-token
+      context window, with less than 0.01% performance decay in
+      needle-in-a-haystack tracking.
+    why_it_matters: >
+      Eliminates state drift. The system can digest an entire codebase,
+      scientific literature, and historical enterprise or lab logs without
+      forgetting original parameters or drifting during long execution loops.
+    model_mapping:
+      primary_stage: "long_horizon_agent_reliability"
+      informs:
+        - "current_agent_task_horizon_hours"
+        - "agent_time_horizon_doubling_months"
+        - "agi_integration_lag_months"
+
+  - id: "CP2"
+    order: 2
+    name: "Autonomous Formal Verification"
+    capability_area: "math"
+    refined_metric: >
+      Independent, closed-loop formalization and proof generation for an
+      unverified mathematical conjecture or non-trivial software kernel using a
+      verified proof assistant such as Lean 4, with zero human prompting.
+    why_it_matters: >
+      Acts as a hard gate for verified reasoning. A system that can generate
+      mathematically verified novel logic can verify its own code modifications
+      with much less human review bottleneck.
+    model_mapping:
+      primary_stage: "superhuman_ai_researcher"
+      informs:
+        - "general_capability_lag_after_coding_months"
+        - "ai_rnd_automation_lag_after_agi_months"
+        - "superhuman_ai_researcher_lag_months"
+
+  - id: "CP3"
+    order: 3
+    name: "Horizon-Unbounded Agency"
+    capability_area: "agency"
+    refined_metric: >
+      Sustained, continuous execution of multi-turn, cross-domain engineering
+      objectives across a 336-hour (14-day) production run, using dynamic
+      self-correction and tool use with a 0% fatal exception rate.
+    why_it_matters: >
+      Shifts the system from assistant behavior to autonomous employee behavior:
+      it can run large research projects, spin up sandboxes, debug scripts, and
+      continue for two weeks without human hand-holding.
+    model_mapping:
+      primary_stage: "long_horizon_agent_reliability"
+      informs:
+        - "coding_automation_threshold_human_hours"
+        - "agent_time_horizon_doubling_months"
+        - "agi_integration_lag_months"
+
+  - id: "CP4"
+    order: 4
+    name: "Exascale Infrastructure Hardening"
+    capability_area: "compute"
+    refined_metric: >
+      Sustained orchestration of a single distributed optical cluster drawing
+      >=1.2 GW of power while maintaining >99.99% hardware utilization and
+      fault-tolerant state checkpointing over a 30-day training window.
+    why_it_matters: >
+      Marks the transition from training on large clusters to managing an
+      industrial-scale physical grid engine that can tolerate the thermodynamic
+      and computational loads required for full-scale scaling.
+    model_mapping:
+      primary_stage: "internal_asi"
+      informs:
+        - "effective_compute_growth_x_per_year"
+        - "infrastructure_friction_months"
+        - "governance_delay_months"
+
+  - id: "CP5"
+    order: 5
+    name: "Recursive Synthetic Iteration"
+    capability_area: "data"
+    refined_metric: >
+      Monotonic, measurable capability gains across five consecutive generations
+      of fully synthetic, model-generated data loops, bypassing the asymptotic
+      limit of human-generated training data without model collapse.
+    why_it_matters: >
+      Breaks the human-data bottleneck. The system can create increasingly useful
+      training tracks for concepts that are rare, expensive, or not yet well
+      represented in human-written data.
+    model_mapping:
+      primary_stage: "takeoff"
+      informs:
+        - "takeoff_lag_months"
+        - "algorithmic_efficiency_x_per_year"
+        - "superhuman_ai_researcher_lag_months"
+
+  - id: "CP6"
+    order: 6
+    name: "Meta-Architectural Optimization"
+    capability_area: "r_and_d"
+    refined_metric: >
+      Automated design, compilation, and algorithmic validation of a novel neural
+      network architecture or training paradigm that delivers a >=10% increase
+      in compute efficiency, measured as FLOP reduction relative to
+      state-of-the-art baselines.
+    why_it_matters: >
+      Triggers faster AI R&D feedback loops. The AI becomes a useful AI
+      researcher by discovering structural efficiencies that make existing
+      hardware materially more effective.
+    model_mapping:
+      primary_stage: "superhuman_ai_researcher"
+      informs:
+        - "algorithmic_efficiency_x_per_year"
+        - "ai_rnd_automation_lag_after_agi_months"
+        - "superhuman_ai_researcher_lag_months"
+
+  - id: "CP7"
+    order: 7
+    name: "Asymmetric Takeoff Divergence"
+    capability_area: "takeoff"
+    refined_metric: >
+      Cross-domain capability accumulation velocity exceeding 100x the cumulative
+      human engineering baseline per hour, characterized by autonomous,
+      multi-tiered recursive self-improvement loops.
+    why_it_matters: >
+      Identifies the point where progress becomes dominated by recursive machine
+      improvement rather than human research cycles. At this stage, calendar time
+      can stop being a good proxy for capability change.
+    model_mapping:
+      primary_stage: "internal_asi"
+      informs:
+        - "takeoff_lag_months"
+        - "internal_asi_arrival_months"
+        - "agi_to_asi_lag_months"

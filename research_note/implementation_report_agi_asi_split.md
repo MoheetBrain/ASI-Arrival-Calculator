@@ -22,6 +22,7 @@ Implemented in `forecast_inputs/`:
 - `agi_definition.yaml`: machine-readable AGI definition.
 - `asi_definition.yaml`: machine-readable capability-and-agency ASI definition.
 - `milestone_definitions.yaml`: definitions for coding automation, long-horizon agents, AGI, AI R&D automation, superhuman AI researcher, internal ASI, and public ASI.
+- `capability_ladder.yaml`: qualitative 7-checkpoint ladder for interpreting memory, formal verification, agency, infrastructure, synthetic-data, AI R&D, and takeoff evidence.
 
 ### Evidence Tables
 

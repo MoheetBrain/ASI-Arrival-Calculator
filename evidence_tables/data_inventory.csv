@@ -14,4 +14,4 @@ AI R&D Automation,rsi_initiation_threshold,Binary/Probability,Lab announcements,
 Deployment and Governance,export_control_delay,Months,BIS Federal Register,Trade compliance law firms,Ad-hoc,High,Additive internal-to-public delay,Manual
 Deployment and Governance,safety_pause_lag,Months,Frontier Model Forum,AISI testing guidelines,Annually,Medium,Pre-deployment red-team delay,Manual
 Outside Forecasts,metaculus_agi_median,Date,Metaculus API,Manifold/Polymarket,Weekly,Medium,Comparative validation baseline,Automated planned
-Outside Forecasts,ai_impacts_median,Year,AI Impacts surveys,80,000 Hours forecasts,Bi-annually,High,Human-prior sensitivity baseline,Manual
+Outside Forecasts,ai_impacts_median,Year,AI Impacts surveys,"80,000 Hours forecasts",Bi-annually,High,Human-prior sensitivity baseline,Manual
