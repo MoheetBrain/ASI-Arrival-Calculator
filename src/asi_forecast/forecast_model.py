@@ -19,8 +19,10 @@ SAMPLED_INPUT_COLUMNS = [
     "superhuman_ai_researcher_lag_months",
     "takeoff_lag_months",
     "infrastructure_friction_months",
-    "governance_delay_months",
-    "deployment_delay_internal_to_public_months",
+    "phase_overlap_coefficient",
+    "compute_governance_friction_months",
+    "deployment_governance_delay_months",
+    "secrecy_visibility_delay_months",
 ]
 
 
@@ -30,6 +32,8 @@ DERIVED_COLUMNS = [
     "long_horizon_agent_months",
     "general_capability_months",
     "agi_arrival_months",
+    "raw_agi_to_asi_lag_months",
+    "effective_agi_to_asi_lag_months",
     "internal_asi_arrival_months",
     "public_asi_arrival_months",
     "agi_to_asi_lag_months",

@@ -100,19 +100,50 @@ asi_stage:
     unit: months
     evidence_category: intermediate
 
-deployment_stage:
-  governance_delay_months:
-    distribution: triangular
+phase_overlap_coefficient:
+  distribution: triangular
+  low: 0.25
+  mode: 0.45
+  high: 0.65
+  unit: fraction
+  evidence_category: asi
+  description: "Author-prior scenario leans toward faster takeoff, so the AGI-to-ASI overlap is higher than the empirical base."
+
+long_tail_adjustment:
+  enabled: true
+  distribution_type: mixture
+  base_model_weight: 0.85
+  late_tail_weight: 0.15
+  late_tail_distribution: shifted_lognormal
+  late_tail_start_year: 2040
+  description: "Fat-tail probability representing systemic bottlenecks, energy constraints, and alignment failures."
+
+governance:
+  compute_governance_friction_months:
+    applies_to: internal_agi_and_internal_asi
     low: 0
     mode: 2
+    high: 9
+    unit: months
+    evidence: "Tier 1 data centre permitting and domestic hardware friction."
+  deployment_governance_delay_months:
+    applies_to: public_asi_only
+    low: 1
+    mode: 4
     high: 18
     unit: months
-    evidence_category: governance
-
-  deployment_delay_internal_to_public_months:
-    distribution: triangular
-    low: 0
+    evidence: "Safety evaluations and audits prior to commercial release."
+  secrecy_visibility_delay_months:
+    applies_to: public_visibility_only
+    low: 1
     mode: 4
-    high: 24
+    high: 12
     unit: months
-    evidence_category: governance
+    evidence: "Defense classification and national security restrictions."
+
+correlation_matrix:
+  effective_compute_growth_x_per_year:
+    algorithmic_efficiency_x_per_year: 0.50
+    agent_time_horizon_doubling_months: -0.60
+  algorithmic_efficiency_x_per_year:
+    agent_time_horizon_doubling_months: -0.55

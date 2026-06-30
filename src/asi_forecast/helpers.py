@@ -90,7 +90,9 @@ def apply_scenario(config: dict[str, Any], scenario: str) -> dict[str, Any]:
         _scale_parameter(adjusted, "asi_stage", "ai_rnd_automation_lag_after_agi_months", 0.75, 0.0)
         _scale_parameter(adjusted, "asi_stage", "superhuman_ai_researcher_lag_months", 0.75, 0.0)
         _scale_parameter(adjusted, "asi_stage", "takeoff_lag_months", 0.75, 0.0)
-        _scale_parameter(adjusted, "deployment_stage", "governance_delay_months", 0.70, 0.0)
+        _scale_parameter(adjusted, "governance", "compute_governance_friction_months", 0.70, 0.0)
+        _scale_parameter(adjusted, "governance", "deployment_governance_delay_months", 0.70, 0.0)
+        _scale_parameter(adjusted, "governance", "secrecy_visibility_delay_months", 0.70, 0.0)
         return validate_forecast_config(adjusted).model_dump(exclude_none=True)
     if scenario == "slow":
         _scale_parameter(adjusted, "agi_stage", "effective_compute_growth_x_per_year", 0.80, 1.01)
@@ -102,8 +104,9 @@ def apply_scenario(config: dict[str, Any], scenario: str) -> dict[str, Any]:
         _scale_parameter(adjusted, "asi_stage", "superhuman_ai_researcher_lag_months", 1.40, 0.0)
         _scale_parameter(adjusted, "asi_stage", "takeoff_lag_months", 1.40, 0.0)
         _scale_parameter(adjusted, "asi_stage", "infrastructure_friction_months", 1.25, 0.0)
-        _scale_parameter(adjusted, "deployment_stage", "governance_delay_months", 1.50, 0.0)
-        _scale_parameter(adjusted, "deployment_stage", "deployment_delay_internal_to_public_months", 1.25, 0.0)
+        _scale_parameter(adjusted, "governance", "compute_governance_friction_months", 1.40, 0.0)
+        _scale_parameter(adjusted, "governance", "deployment_governance_delay_months", 1.50, 0.0)
+        _scale_parameter(adjusted, "governance", "secrecy_visibility_delay_months", 1.40, 0.0)
         return validate_forecast_config(adjusted).model_dump(exclude_none=True)
 
     raise ValueError(f"Unknown scenario: {scenario}")

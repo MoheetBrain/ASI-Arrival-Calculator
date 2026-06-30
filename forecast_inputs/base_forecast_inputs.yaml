@@ -10,6 +10,15 @@ author_prior:
   weight: 0.0
   note: "Author prior is documented but not blended into the empirical base forecast by default."
 
+# ---------------------------------------------------------------------------
+# AGI prerequisite stage.
+#
+# Pre-AGI capability drivers. NOTE (ANSWERS.txt "Double-Count Problem"):
+# agent_time_horizon_doubling_months is NOT an independent driver. The empirical
+# METR doubling already embeds compute + algorithmic progress, so the engine
+# (a) dampens the compute/algo rescaling with a sub-linear exponent and
+# (b) couples these three variables via the correlation_matrix below.
+# ---------------------------------------------------------------------------
 agi_stage:
   effective_compute_growth_x_per_year:
     distribution: triangular
@@ -67,6 +76,14 @@ agi_stage:
     unit: months
     evidence_category: agi
 
+# ---------------------------------------------------------------------------
+# Post-AGI transition stage (AGI -> internal ASI).
+#
+# These are the sequential intelligence-explosion lags. They are SUMMED into a
+# raw lag and then compressed by (1 - phase_overlap_coefficient) because R&D
+# automation, the superhuman researcher, and takeoff run in parallel rather
+# than strictly back-to-back (ANSWERS.txt "Phase-Overlap Problem").
+# ---------------------------------------------------------------------------
 asi_stage:
   ai_rnd_automation_lag_after_agi_months:
     distribution: triangular
@@ -100,20 +117,59 @@ asi_stage:
     unit: months
     evidence_category: intermediate
 
-deployment_stage:
-  governance_delay_months:
-    distribution: triangular
+# Fraction of the raw AGI-to-ASI sequential lag removed because the transition
+# stages parallelise and accelerate one another.
+phase_overlap_coefficient:
+  distribution: triangular
+  low: 0.15
+  mode: 0.35
+  high: 0.65
+  unit: fraction
+  evidence_category: asi
+  description: "Fraction of AGI-to-ASI sequential lag subtracted due to the parallelisation of AI R&D automation and intelligence explosion takeoff."
+
+# Fat-tail probability for systemic bottlenecks (data walls, energy/grid limits,
+# alignment/recursive-improvement failure). Restores non-zero mass past the
+# triangular high bounds.
+long_tail_adjustment:
+  enabled: true
+  distribution_type: mixture
+  base_model_weight: 0.85
+  late_tail_weight: 0.15
+  late_tail_distribution: shifted_lognormal
+  late_tail_start_year: 2040
+  description: "Fat-tail probability representing systemic bottlenecks, energy constraints, and alignment failures, aligned with Biological Anchors and ESPAI 2023."
+
+# Targeted governance vectors. governance_delay_added_to_internal_asi = false:
+# safety/deployment frameworks delay public release, not secret internal training.
+governance:
+  compute_governance_friction_months:
+    applies_to: internal_agi_and_internal_asi
     low: 0
     mode: 3
+    high: 12
+    unit: months
+    evidence: "Tier 1 data centre permitting and domestic hardware friction; export controls bypassed by National Validated End User exemptions."
+  deployment_governance_delay_months:
+    applies_to: public_asi_only
+    low: 2
+    mode: 6
     high: 24
     unit: months
-    evidence_category: governance
-
-  deployment_delay_internal_to_public_months:
-    distribution: triangular
-    low: 0
+    evidence: "RSP v3.0 red-teaming, safety evaluations, and government AISI audits prior to commercial release."
+  secrecy_visibility_delay_months:
+    applies_to: public_visibility_only
+    low: 1
     mode: 6
-    high: 36
+    high: 18
     unit: months
-    evidence_category: governance
+    evidence: "Defense classification and national security restrictions on frontier capabilities."
 
+# Spearman rank correlations among the macro drivers. Signs encode that faster
+# compute/algo progress means a SHORTER (smaller) doubling time.
+correlation_matrix:
+  effective_compute_growth_x_per_year:
+    algorithmic_efficiency_x_per_year: 0.50
+    agent_time_horizon_doubling_months: -0.60
+  algorithmic_efficiency_x_per_year:
+    agent_time_horizon_doubling_months: -0.55

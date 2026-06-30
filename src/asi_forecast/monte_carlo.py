@@ -1,4 +1,4 @@
-"""Vectorized Monte Carlo simulation for the AGI-to-ASI forecast."""
+"""Vectorized Monte Carlo simulation for the AGI-to-ASI forecast (v1.0)."""
 
 from __future__ import annotations
 
@@ -6,15 +6,32 @@ import numpy as np
 import pandas as pd
 
 from .helpers import index_to_month, month_to_index
+from .iman_conover import build_correlation_matrix, induce_rank_correlation
 from .model import (
     agi_arrival_months,
     coding_automation_months,
+    effective_agi_to_asi_lag_months,
     internal_asi_arrival_months,
     long_horizon_agent_months,
     progress_adjusted_doubling_months,
     public_asi_arrival_months,
+    raw_agi_to_asi_lag_months,
 )
-from .uncertainty import sample_parameter
+from .uncertainty import apply_long_tail_mixture, sample_parameter, triangular_sample
+
+
+# Macro drivers whose joint draw is corrected by the correlation matrix.
+CORRELATED_DRIVERS = [
+    "effective_compute_growth_x_per_year",
+    "algorithmic_efficiency_x_per_year",
+    "agent_time_horizon_doubling_months",
+]
+
+# ANSWERS.txt long-tail anchor: Biological Anchors median Transformative AI ~2052.
+BIO_ANCHOR_MEDIAN_YEAR = 2052
+# Modeling choice for the AGI-to-ASI lag tail: a multi-year stall if recursive
+# self-improvement hits an asymptotic limit (months).
+LAG_LATE_TAIL_MEDIAN_MONTHS = 60.0
 
 
 def _sample_named(
@@ -26,6 +43,16 @@ def _sample_named(
 ) -> np.ndarray:
     """Sample one named triangular forecast input from a config section."""
     return sample_parameter(rng, config[section][key], sims, name=key)
+
+
+def _sample_governance(
+    config: dict,
+    rng: np.random.Generator,
+    key: str,
+    sims: int,
+) -> np.ndarray:
+    """Sample one targeted governance vector (triangular low/mode/high)."""
+    return triangular_sample(rng, config["governance"][key], sims, name=key)
 
 
 def _month_labels(month_indices: np.ndarray) -> list[str]:
@@ -47,6 +74,7 @@ def simulate_forecast(
 
     rng = np.random.default_rng(seed)
 
+    # --- Macro drivers, sampled then coupled via Iman-Conover -----------------
     effective_compute = _sample_named(
         config, "agi_stage", rng, "effective_compute_growth_x_per_year", sims
     )
@@ -56,6 +84,17 @@ def simulate_forecast(
     horizon_doubling = _sample_named(
         config, "agi_stage", rng, "agent_time_horizon_doubling_months", sims
     )
+
+    correlation_spec = config.get("correlation_matrix")
+    if correlation_spec:
+        target = build_correlation_matrix(CORRELATED_DRIVERS, correlation_spec)
+        stacked = np.column_stack(
+            [effective_compute, algorithmic_efficiency, horizon_doubling]
+        )
+        stacked = induce_rank_correlation(stacked, target, rng)
+        effective_compute, algorithmic_efficiency, horizon_doubling = stacked.T
+
+    # --- Remaining AGI-stage inputs -------------------------------------------
     current_horizon = _sample_named(
         config, "agi_stage", rng, "current_agent_task_horizon_hours", sims
     )
@@ -69,6 +108,7 @@ def simulate_forecast(
         config, "agi_stage", rng, "agi_integration_lag_months", sims
     )
 
+    # --- Post-AGI transition lags ---------------------------------------------
     ai_rnd_lag = _sample_named(
         config, "asi_stage", rng, "ai_rnd_automation_lag_after_agi_months", sims
     )
@@ -79,17 +119,22 @@ def simulate_forecast(
     infrastructure_friction = _sample_named(
         config, "asi_stage", rng, "infrastructure_friction_months", sims
     )
-    governance_delay = _sample_named(
-        config, "deployment_stage", rng, "governance_delay_months", sims
-    )
-    deployment_delay = _sample_named(
-        config,
-        "deployment_stage",
-        rng,
-        "deployment_delay_internal_to_public_months",
-        sims,
+    phase_overlap = triangular_sample(
+        rng, config["phase_overlap_coefficient"], sims, name="phase_overlap_coefficient"
     )
 
+    # --- Targeted governance vectors ------------------------------------------
+    compute_gov_friction = _sample_governance(
+        config, rng, "compute_governance_friction_months", sims
+    )
+    deployment_gov_delay = _sample_governance(
+        config, rng, "deployment_governance_delay_months", sims
+    )
+    secrecy_visibility_delay = _sample_governance(
+        config, rng, "secrecy_visibility_delay_months", sims
+    )
+
+    # --- Structural equations -------------------------------------------------
     adjusted_doubling = progress_adjusted_doubling_months(
         horizon_doubling,
         effective_compute,
@@ -107,19 +152,51 @@ def simulate_forecast(
         long_horizon_months,
         general_capability_lag,
         agi_integration_lag,
+        compute_gov_friction,
     )
-    internal_asi_offsets = internal_asi_arrival_months(
-        agi_month_offsets,
+
+    raw_lag = raw_agi_to_asi_lag_months(
         ai_rnd_lag,
         sar_lag,
         takeoff_lag,
         infrastructure_friction,
-        governance_delay,
     )
-    public_asi_offsets = public_asi_arrival_months(internal_asi_offsets, deployment_delay)
-    agi_to_asi_lag = internal_asi_offsets - agi_month_offsets
+    effective_lag = effective_agi_to_asi_lag_months(raw_lag, phase_overlap)
 
+    # --- Long-tail mixture (separate tails for AGI date and the lag) ----------
     start_index = month_to_index(simulation_config["start_month"])
+    long_tail = config.get("long_tail_adjustment", {})
+    if long_tail.get("enabled"):
+        late_weight = float(long_tail["late_tail_weight"])
+        late_start_year = int(long_tail["late_tail_start_year"])
+        late_start_offset = month_to_index(f"{late_start_year:04d}-01") - start_index
+        agi_median_offset = max(
+            (BIO_ANCHOR_MEDIAN_YEAR - late_start_year) * 12.0, 12.0
+        )
+        agi_month_offsets = apply_long_tail_mixture(
+            agi_month_offsets,
+            rng,
+            late_tail_weight=late_weight,
+            floor_offset_months=float(late_start_offset),
+            median_offset_months=agi_median_offset,
+        )
+        effective_lag = apply_long_tail_mixture(
+            effective_lag,
+            rng,
+            late_tail_weight=late_weight,
+            floor_offset_months=0.0,
+            median_offset_months=LAG_LATE_TAIL_MEDIAN_MONTHS,
+        )
+
+    internal_asi_offsets = internal_asi_arrival_months(agi_month_offsets, effective_lag)
+    public_asi_offsets = public_asi_arrival_months(
+        internal_asi_offsets,
+        deployment_gov_delay,
+        secrecy_visibility_delay,
+    )
+    agi_to_asi_lag = internal_asi_offsets - agi_month_offsets
+    internal_to_public_delay = deployment_gov_delay + secrecy_visibility_delay
+
     agi_month_index = start_index + np.ceil(agi_month_offsets).astype(int)
     internal_asi_month_index = start_index + np.ceil(internal_asi_offsets).astype(int)
     public_asi_month_index = start_index + np.ceil(public_asi_offsets).astype(int)
@@ -138,17 +215,21 @@ def simulate_forecast(
             "superhuman_ai_researcher_lag_months": sar_lag,
             "takeoff_lag_months": takeoff_lag,
             "infrastructure_friction_months": infrastructure_friction,
-            "governance_delay_months": governance_delay,
-            "deployment_delay_internal_to_public_months": deployment_delay,
+            "phase_overlap_coefficient": phase_overlap,
+            "compute_governance_friction_months": compute_gov_friction,
+            "deployment_governance_delay_months": deployment_gov_delay,
+            "secrecy_visibility_delay_months": secrecy_visibility_delay,
             "adjusted_agent_time_horizon_doubling_months": adjusted_doubling,
             "coding_automation_months": coding_months,
             "long_horizon_agent_months": long_horizon_months,
             "general_capability_months": general_capability_months,
             "agi_arrival_months": agi_month_offsets,
+            "raw_agi_to_asi_lag_months": raw_lag,
+            "effective_agi_to_asi_lag_months": effective_lag,
             "internal_asi_arrival_months": internal_asi_offsets,
             "public_asi_arrival_months": public_asi_offsets,
             "agi_to_asi_lag_months": agi_to_asi_lag,
-            "internal_to_public_delay_months": deployment_delay,
+            "internal_to_public_delay_months": internal_to_public_delay,
             "agi_month_index": agi_month_index,
             "internal_asi_month_index": internal_asi_month_index,
             "public_asi_month_index": public_asi_month_index,

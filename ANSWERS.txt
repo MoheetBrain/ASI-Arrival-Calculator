@@ -1,0 +1,336 @@
+Comprehensive Evaluation of AGI to ASI Forecasting Methodologies and Structural Model Dependencies
+Executive Summary
+The transition from Artificial General Intelligence (AGI) to Artificial Superintelligence (ASI) represents a period characterised by compounding feedback loops, overlapping developmental phases, and deeply interconnected macroeconomic drivers. This report provides an exhaustive evaluation of five critical vulnerabilities within the proposed stage-gated Monte Carlo forecast for AGI and ASI arrival dates. The analysis determines that naive sequential modelling, particularly when assuming strict statistical independence between capabilities, compute scaling, and hardware trajectories, introduces severe timeline inflation and structural double-counting.
+The evaluation establishes that the METR task-horizon metric operates as a downstream aggregate of effective compute and scaffolding rather than an independent variable, necessitating a fundamental restructuring of how algorithmic efficiency and agentic progress are mathematically combined in the simulation. Furthermore, sequential stage-gating for artificial intelligence research and development (AI R&D) automation falsely assumes a serial progression for processes that historical data and macroeconomic frameworks demonstrate run in parallel. Consequently, a formal phase overlap coefficient is derived and recommended. The analysis also validates the necessity of introducing a rank-correlation structure via the Iman-Conover method to accurately handle the underlying economic drivers linking physical compute expansion and algorithmic progress. To address systemic failure modes, a lognormal mixture distribution is formulated to accurately capture the missing fat-tail probabilities of a late-century AGI arrival. Finally, a review of recent global governance frameworks, including the United States Bureau of Industry and Security export controls and Anthropic's Responsible Scaling Policy v3.0, dictates that governance predominantly delays public deployment and global diffusion rather than internal capability milestones.
+The Double-Count Problem
+Evidence and Analysis
+The forecasting model currently treats effective compute growth, algorithmic efficiency, and agent task-horizon doubling as entirely independent variables. However, a rigorous decomposition of the METR task-horizon benchmark reveals that these variables are fundamentally intertwined and measure the same underlying phenomena. METR measures the length of tasks, benchmarked against human expert completion time, that frontier artificial intelligence agents can complete with a specific reliability threshold, typically calculated at 50% or 80% success rates.   
+Historically, the METR task horizon doubled approximately every seven months from 2019 to 2024, accelerating to a 4.3-month or even 3-month doubling time in the post-2023 evaluation window. The METR Time Horizon 1.1 update, released in early 2026, expanded the task suite from 170 to 228 tasks, integrating the HCAST and RE-Bench suites while migrating the evaluation infrastructure to the United Kingdom AI Security Institute's open-source Inspect framework. The observed task-horizon doubling is strictly an empirical aggregate trend evaluated over frontier systems, including Claude 3.7 Sonnet, Claude Opus 4.5, GPT-4o, and the o3 reasoning models.   
+Because METR tests the final compiled capabilities of frontier models equipped with external scaffolding, tool-calling capabilities, and complex environments, the trend inherently captures all upstream drivers of artificial intelligence progress. The Time Horizon 1.1 evaluations already encapsulate hardware and model scaling, as the frontier models evaluated are the direct output of exponentially increasing physical training compute. Furthermore, improvements in network architecture, data filtering, and training efficiency are embedded in the evaluated models. Epoch estimates that these algorithmic advancements divide the compute required for a specific capability milestone by a factor of three annually. The evaluations also capture scaffolding and tool use, as the shift from Vivaria to Inspect demonstrated that models are highly sensitive to the agentic wrapper. Finally, the inclusion of reasoning-centric models explicitly injects inference-time scaling and post-training reinforcement learning into the historical trend.   
+Multiplying compute growth, algorithmic efficiency, and METR task-horizon doubling in a Monte Carlo model constitutes severe structural double-counting. If effective compute dictates the underlying capability of a neural network, then the task horizon is merely the observed downstream capability signal. Advanced capability frameworks explicitly model the task horizon as a downstream function of effective compute rather than an independent driver.   
+Quantified Answer
+To derive the correct adjustment factor, the relationship between effective compute growth and the task horizon must be formalised mathematically. Epoch and historical scaling analyses estimate that physical training compute historically grows at approximately 4x per year, while algorithmic progress acts as a 3x multiplier. This results in an annual effective compute growth of 12x, which translates to 1.08 orders of magnitude per year.   
+If effective compute grows by a factor of 12 per year, the growth over a 7-month doubling period is calculated precisely:
+12 
+(7/12)
+ ≈4.26
+This calculation indicates that a 4.26x increase in effective compute historically corresponds to a 2x doubling of the METR human-equivalent task horizon. Therefore, the task horizon scales sub-linearly with effective compute. The decomposition of the task horizon improvement can be estimated as follows:   
+Driver of Task Horizon Improvement	Estimated Fraction	Justification
+Compute & Model Scaling + Algorithmic Efficiency	70% – 85%	The historical 7-month doubling is almost entirely driven by the underlying 12x annual increase in effective compute prior to 2024.
+Scaffolding, Tooling & Inference Scaling	15% – 30%	The recent acceleration to a 4.3-month doubling time coincides heavily with advanced agentic scaffolding and the introduction of reasoning models.
+Unexplained / Extraneous	0% – 5%	Minor variations due to benchmark design changes and evaluation noise between Vivaria and Inspect.
+The confidence level for the assertion that the task horizon is a dependent aggregate variable is high, exceeding 85%. The confidence level regarding the exact sub-linear scaling exponent remains medium, approximately 60%, due to the limited sample size of ultra-long context evaluations.
+Model Recommendation
+The Monte Carlo model must not multiply compute, algorithmic efficiency, and the task horizon to generate agent capability. Instead, the simulation should treat the task horizon as a downstream result of effective compute. If the variables must remain separated due to legacy architectural constraints, the model must enforce a strict correlation or apply a dampening exponent.
+The recommended approach is to replace the independent task horizon variable with a downstream capability signal derived from effective compute, reserving an independent variable only for scaffolding and tooling breakthroughs that allow models to exceed their raw compute weight. If this architectural refactor is impossible, the recommended adjustment is to correlate the variables heavily.
+Recommended model formula adjustment:
+effective_agent_progress = task_horizon_growth_rate ^ 0.5
+Alternatively, apply a Pearson correlation matrix during sampling:
+corr(task_horizon_growth_rate, effective_compute_growth) = 0.85
+Phase-Overlap Problem
+Evidence and Analysis
+The current forecasting architecture assumes a strict sequential progression: AGI leads to AI R&D automation, which subsequently leads to the emergence of a superhuman AI researcher, initiating the intelligence explosion takeoff, and finally culminating in internal ASI. Advanced economic and capability models demonstrate that this assumption introduces significant timeline inflation. Macroeconomic frameworks, such as Epoch's Growth and AI Transition Endogenous (GATE) model and Tom Davidson's Full Takeoff Model (FTM), explicitly treat AI R&D automation as a continuous, overlapping spectrum rather than a discrete, gated stage.   
+Within Davidson's compute-centric framework, the threshold where artificial intelligence automates 20% of cognitive tasks and the threshold where it automates 100% of tasks span approximately four orders of magnitude of effective compute. During this transition phase, human researchers begin utilizing partially automated tools, meaning that AI R&D acceleration commences long before full AGI is achieved. Furthermore, the transition from an Automated Coder to a Superhuman AI Researcher relies heavily on automating research taste, which is defined as the ability to set optimal research directions, evaluate empirical experiments, and allocate physical compute efficiently.   
+Takeoff dynamics and the subsequent software intelligence explosion occur in parallel with the maturation of the Superhuman AI Researcher. An artificial intelligence system does not remain idle until it achieves full ASI before contributing to the takeoff trajectory. Rather, the system continuously reinvests its current, sub-ASI capabilities into algorithmic progress, code generation, and hardware optimisation, thereby accelerating the arrival of subsequent capability milestones. The artificial separation of these stages in a Monte Carlo simulation fails to capture the compounding returns of this reinvestment cycle.   
+Quantified Answer
+If treated sequentially, the simple summation of the R&D automation lag, the superhuman researcher lag, and the takeoff lag will artificially inflate the timeline by several years. A phase overlap coefficient must be applied to subtract the parallelised duration from the total sequential sum.
+The overlap coefficient is defined as the fraction of the total sequential stage duration that must be subtracted because the stages occur in parallel and accelerate one another. The analysis of overlapping capability trajectories yields the following distribution for the overlap coefficient:
+Takeoff Scenario	Recommended Coefficient	Interpretation & Evidence
+Slow Takeoff (Low Range)	0.15	Assumes rigid bottlenecks in physical experiment throughput or synthetic data generation prevent parallel scaling. Human latency remains a factor.
+Base Case (Mode)	0.35	Aligns with FTM assumptions where task automation continuously feeds back into R&D inputs, blending the phases by roughly a third of their total duration.
+Fast Takeoff (High Range)	0.65	An Automated Coder rapidly bootstraps research taste, initiating a taste-only singularity where human bottlenecks are entirely bypassed.
+In fast takeoff scenarios, the overlap coefficient should approach the high range, as the intelligence explosion renders the distinction between a superhuman researcher and an artificial superintelligence nearly instantaneous.
+Model Recommendation
+The phase overlap should be applied exclusively to the AGI-to-ASI transition sequence. Pre-AGI automation is already priced into the effective compute curves and algorithmic efficiency metrics leading up to the AGI milestone. Furthermore, pre-AGI coding automation should not be summed; instead, the model must utilise a maximum date function. Because AGI requires all sub-domains to mature simultaneously, the AGI arrival date is the maximum, or latest, of the required prerequisite milestones, not their cumulative sum.
+The most defensible mathematical structure separates the prerequisite gating from the transition lag overlap. The model should employ the following logic:
+AGI_month = max(coding_automation_month, long_horizon_agent_month, general_capability_month)
+For the transition to ASI, the model must apply the overlap coefficient to the raw sequential lag:
+effective_agi_to_asi_lag = sum(sequential_lags) * (1 - phase_overlap_coefficient)
+The Python implementation should model the phase_overlap_coefficient as a triangular distribution with a low of 0.15, a mode of 0.35, and a high of 0.65.
+Variable-Correlation Problem
+Evidence and Analysis
+In Monte Carlo simulations, assuming statistical independence between inherently correlated variables distorts the joint probability distribution, producing artificially wide variances and sampling unrealistic edge cases. Effective compute growth and algorithmic efficiency are fundamentally driven by the same underlying macroeconomic inputs, specifically capital expenditure, hardware research and development investments, and semiconductor supply chain maturation.   
+Epoch AI's analytical models demonstrate that while algorithmic progress and physical compute are technically distinct mechanisms—one reduces the floating-point operations required for a given capability, while the other increases the total available floating-point operations—they are deeply correlated through market incentives. An influx of venture and corporate funding drives both the construction of gigawatt-scale data centres and the acquisition of top-tier talent to optimise the neural networks trained within them. Furthermore, specific algorithmic breakthroughs, such as optimal scaling laws or advances in transformer architectures, directly shape how hardware is designed and scaled, creating a cyclical dependency.   
+Historical data compiled by Epoch AI indicates that training compute requirements drop by approximately 2.5x to 3x per year due strictly to algorithmic progress. Concurrently, physical training compute has grown by approximately 4x per year. Because both vectors are heavily dependent on the leading artificial intelligence laboratories' revenue and funding capabilities—projected to approach $100 trillion annualized by the early 2030s under highly aggressive economic models—they inevitably move in tandem.   
+Quantified Answer
+To prevent the Monte Carlo simulation from pairing an extraordinarily high compute growth rate with a stagnant algorithmic efficiency rate, a correlation matrix must be defined.
+The estimated Pearson correlation between effective compute growth and algorithmic efficiency is 0.45. This reflects the reality that positive funding shocks accelerate both variables simultaneously. However, the Spearman rank correlation estimate is 0.50. Rank correlation is mathematically superior and more robust for the heavy-tailed distributions typical of artificial intelligence progress metrics, as it evaluates the monotonic relationship without assuming linearity.
+The uncertainty range for this correlation lies between 0.30 and 0.65. The correlation is bounded by physical supply chain frictions; immense funding does not instantaneously yield operational semiconductor fabrication plants, meaning algorithmic efficiency sometimes spikes dynamically to compensate for physical compute bottlenecks.   
+Sign handling is a critical mathematical component. If the variable agent_time_horizon_doubling_months is utilised, a lower numerical value indicates faster technological progress. Therefore, compute growth, where a higher value is faster, must maintain a negative correlation with the doubling months metric.
+Variable 1	Variable 2	Spearman Rank Correlation (ρ)
+Effective Compute Growth (x/year)	Algorithmic Efficiency (x/year)	0.50
+Effective Compute Growth (x/year)	Agent Time Horizon (months/doubling)	-0.60
+Algorithmic Efficiency (x/year)	Agent Time Horizon (months/doubling)	-0.55
+Model Recommendation
+For Python implementations involving heavy-tailed or non-normal distributions, standard multivariate normal sampling via Cholesky decomposition severely distorts the marginal distributions, leading to invalid outputs.
+For the v0.2 iteration of the forecasting project, the recommended approach is a simpler scenario-level correlation. The model should sample a global macroeconomic investment factor on a uniform scale from 0 to 1, and shift the modes of both the compute and algorithmic efficiency variables linearly based on this underlying factor.
+For the v1.0 iteration, the Iman-Conover method is the mathematically optimal standard for inducing rank correlation among Monte Carlo inputs without altering their precisely defined marginal distributions. The Iman-Conover algorithm applies Latin Hypercube Sampling to generate independent marginals, generates a target correlation matrix via Cholesky decomposition on standard normal scores, and then reorders the original marginal samples to perfectly match the target rank correlation matrix. This ensures the structural integrity of the individual forecasts while enforcing the macroeconomic dependencies.   
+Long-Tail Problem
+Evidence and Analysis
+Forecasting models that rely exclusively on triangular or uniform distributions inherently impose rigid, artificial upper bounds, implicitly assigning a zero percent probability to AGI or ASI arriving after a specific cutoff year, such as 2050 or 2060. Empirical expert elicitation and economic models consistently exhibit fat right tails, reflecting the persistent, non-zero probability of systemic failures. These failure modes include insurmountable synthetic data walls, severe energy grid bottlenecks, catastrophic regulatory interventions, or the fundamental failure of recursive self-improvement algorithms.   
+The 2023 Expert Survey on Progress in AI (ESPAI), conducted by AI Impacts, surveyed 2,778 researchers who had published in top-tier artificial intelligence venues. While the median estimate for High-Level Machine Intelligence was 2047, the 85th percentile response for a 50% probability of HLMI extended to 2073, and the median estimate for the full automation of labor was 2116. Ajeya Cotra's Biological Anchors model places a 50% probability of Transformative AI by 2052, but maintains a 22% probability that it arrives after 2100. Metaculus community predictions for ASI and transformative economic impacts also retain substantial probability mass beyond the year 2060, heavily influenced by potential physical infrastructure limits.   
+To avoid a hard wall in the simulation, the model architecture must transition from bounded distributions, which accurately capture the aggressive compute-driven short timelines, to unbounded, fat-tailed distributions for the outer percentiles.
+Quantified Answer
+To fit a lognormal distribution matching the Biological Anchors long tail—specifically the 10% probability by 2031 and the 50% probability by 2052, relative to a 2020 baseline—the underlying normal parameters μ and σ must be derived.
+Let t represent the number of years since 2020.
+The 10th percentile is t 
+10
+​	
+ =11, and the 50th percentile (median) is t 
+50
+​	
+ =32.
+For a lognormal distribution, the median dictates the mean of the underlying normal distribution:
+μ=ln(t 
+50
+​	
+ )=ln(32)≈3.4657
+The standard deviation σ is derived using the Z-score for the 10th percentile, which is -1.28155:
+ln(t 
+10
+​	
+ )=μ−1.28155×σ
+σ= 
+1.28155
+3.4657−ln(11)
+​	
+ = 
+1.28155
+3.4657−2.3979
+​	
+ ≈0.8332
+Using these fitted parameters, the cumulative probability of AGI arrival by the year 2100, where t=80, is calculated using the cumulative distribution function of the standard normal distribution at the corresponding Z-score:
+Z= 
+0.8332
+ln(80)−3.4657
+​	
+ ≈1.10
+The standard normal CDF for a Z-score of 1.10 is approximately 0.8643. This mathematical derivation leaves approximately 13.5% probability mass beyond the year 2100. This quantified long tail aligns closely with the expert consensus regarding persistent, systemic failure modes and physical bottlenecks.   
+Model Recommendation
+The Monte Carlo model should incorporate a mixture distribution. This mathematical approach combines the existing domain-specific logic with a shifted lognormal distribution to model systemic bottlenecks accurately.
+Separate long-tail distributions must exist for the AGI date and the AGI-to-ASI lag. A system could theoretically stall at AGI for decades if the intelligence explosion framework is fundamentally flawed or if recursive self-improvement hits an asymptotic limit. Furthermore, governance delays and societal pushback contribute uniquely to the long tail for public deployment, independent of internal capabilities.   
+Recommended configuration for the long-tail adjustment:
+Parameter	Recommended Value	Justification
+enabled	true	Required to prevent 0% probability walls at the upper bound.
+distribution_type	mixture	Allows the standard model to operate normally for the first 85% of samples.
+base_model_weight	0.85	Aligns with the 85% confidence in continued scaling.
+late_tail_weight	0.15	Represents the 15% probability of severe bottlenecks.
+late_tail_distribution	shifted_lognormal	Naturally models time-to-event data with a heavy right tail.
+late_tail_start_year	2040	Prevents the long tail from artificially pulling the median backward into the 2020s.
+Governance Target Problem
+Evidence and Analysis
+A critical boolean decision in the model's architecture is whether the generic governance delay variable affects the internal capability timeline of frontier artificial intelligence laboratories. An exhaustive review of government AI policies, export controls, and safety frameworks dictates that the answer is firmly negative: governance delay should not be added to the internal ASI date.
+Government policies, such as the United States Bureau of Industry and Security export controls and the rescinded AI Diffusion Rule, are fundamentally designed to control the global diffusion of dual-use technologies, specifically targeting Tier 2 and Tier 3 nation-states. These frameworks impose strict licensing requirements and volumetric caps on advanced hardware for exports, but explicitly seek to preserve the technological leadership of the United States and its Tier 1 partners. As a result, compute access for internal frontier laboratories in Tier 1 jurisdictions remains largely unfettered through National Validated End User exemptions. Therefore, compute governance friction applies minimally to the absolute frontier of internal capability, mostly manifesting as domestic power permitting delays.   
+Conversely, domestic safety frameworks, such as the United Kingdom AI Security Institute guidelines and Anthropic's Responsible Scaling Policy v3.0, target deployment and misuse risks rather than internal training capabilities. The transition from Anthropic's RSP v2 to v3.0 is highly illustrative; the update eliminated the unconditional hard pause on training models that cross defined capability thresholds, replacing it with a conditional pause that allows continued internal development if a competitor is perceived to be ahead. These frameworks dictate that dangerous capabilities must be secured to prevent weight theft and safeguarded prior to public release.   
+Furthermore, national security apparatuses are highly incentivised to classify ASI once internal capabilities reach threshold levels. Secrecy frameworks create an observability delay, masking internal ASI from public visibility and commercial deployment without slowing the actual technological achievement within the secure facility.   
+Quantified Answer
+The generic governance delay must be split into three distinct, highly targeted variables to accurately reflect the geopolitical reality.
+compute_governance_friction_months: Applies to internal AGI and internal ASI. This variable captures supply chain delays, permitting for gigawatt data centres, and hardware certification.   
+Low: 0 months. Mode: 3 months. High: 12 months.
+Evidence: Exemption pathways for Tier 1 firms bypass strict export controls; domestic power permitting presents the only tangible delay.   
+deployment_governance_delay_months: Applies strictly to public ASI. This captures mandated safety evaluations, red-teaming, and alignment requirements prior to commercial API access.   
+Low: 2 months. Mode: 6 months. High: 24 months.
+Evidence: RSP v3.0 requires extensive roadmapping and risk reports; safety delays for agentic deployment already impose multi-month delays in the current paradigm.   
+secrecy_visibility_delay_months: Applies to public visibility only. This captures the period where a model is classified or restricted entirely to defense and intelligence applications.
+Low: 1 month. Mode: 6 months. High: 18 months.
+Evidence: Rapid militarisation and the inclusion of artificial intelligence in future operating environment defense strategies suggest standard classification delays will be applied to superintelligent systems.   
+Model Recommendation
+The boolean decision is governance_delay_added_to_internal_asi = false.
+Ordinary safety and governance frameworks delay public deployment, not secret internal training runs. Chip export controls constrain geopolitical rivals, not domestic frontier laboratories. Secrecy changes the observability of the system, not the actual underlying capability. Therefore, governance variables must be applied sequentially to the deployment timeline, separated entirely from the internal capability calculation.
+Revised Model Equations
+The following mathematical structure implements the findings regarding maximum stage-gating for prerequisites, overlap coefficients for serial research and development stages, and the strict separation of internal capabilities from public deployment visibility.
+Python
+# AGI requires the simultaneous maturation of coding automation, 
+# long horizon planning, and general capability.
+# Therefore, the AGI date is the maximum of the projected dates for these prerequisites.
+AGI_month = max(coding_automation_month, 
+                long_horizon_agent_month, 
+                general_capability_month) 
+            + agi_integration_lag 
+            + compute_governance_friction_months
+
+# The raw intelligence explosion lag assumes naive, sequential execution 
+# with no overlapping efficiencies between stages.
+raw_agi_to_asi_lag = (ai_rnd_automation_lag 
+                      + superhuman_researcher_lag 
+                      + takeoff_lag 
+                      + infrastructure_friction)
+
+# The effective lag subtracts the overlapping parallel execution of R&D and takeoff 
+# using the derived phase overlap coefficient.
+effective_agi_to_asi_lag = raw_agi_to_asi_lag * (1 - phase_overlap_coefficient)
+
+# Internal ASI represents the actual achievement of superintelligence 
+# behind closed doors at a frontier laboratory.
+internal_ASI_month = AGI_month + effective_agi_to_asi_lag
+
+# Public ASI represents the date the wider global economy and public 
+# become aware of or have access to the superintelligent system.
+public_ASI_month = internal_ASI_month 
+                   + deployment_governance_delay_months 
+                   + secrecy_visibility_delay_months
+The task horizon variable is intentionally absent from the primary addition sequence because it is derived separately upstream via effective_agent_progress = task_horizon_growth_factor(effective_compute).
+Revised YAML Fields for base_forecast_inputs.yaml
+YAML
+phase_overlap_coefficient:
+  distribution: triangular
+  low: 0.15
+  mode: 0.35
+  high: 0.65
+  unit: fraction
+  description: "Fraction of AGI-to-ASI sequential lag subtracted due to the parallelisation of AI R&D automation and intelligence explosion takeoff."
+
+long_tail_adjustment:
+  enabled: true
+  distribution_type: mixture
+  base_model_weight: 0.85
+  late_tail_weight: 0.15
+  late_tail_distribution: shifted_lognormal
+  late_tail_start_year: 2040
+  description: "Fat-tail probability representing systemic bottlenecks, energy constraints, and alignment failures, aligned with Biological Anchors and ESPAI 2023."
+
+governance:
+  compute_governance_friction_months:
+    applies_to: internal_agi_and_internal_asi
+    low: 0
+    mode: 3
+    high: 12
+    evidence: "Tier 1 data centre permitting and domestic hardware friction; export controls bypassed by National Validated End User exemptions."
+  deployment_governance_delay_months:
+    applies_to: public_asi_only
+    low: 2
+    mode: 6
+    high: 24
+    evidence: "RSP v3.0 red-teaming, safety evaluations, and government AISI audits prior to commercial release."
+  secrecy_visibility_delay_months:
+    applies_to: public_visibility_only
+    low: 1
+    mode: 6
+    high: 18
+    evidence: "Defense classification and national security restrictions on frontier capabilities."
+
+correlation_matrix:
+  effective_compute_growth_x_per_year:
+    algorithmic_efficiency_x_per_year: 0.50
+    agent_time_horizon_doubling_months: -0.60
+  algorithmic_efficiency_x_per_year:
+    agent_time_horizon_doubling_months: -0.55
+Recommended Python Implementation Details
+To implement the correlated variables and long-tail distributions efficiently while avoiding distortion of the marginal distributions, the simulation must adopt rigorous statistical methodologies.
+Correlated Sampling:
+For the v0.2 iteration: Implement a simplified scenario-level injection. Sample a global macroeconomic investment factor on a uniform scale from 0 to 1. Shift the modes of both effective_compute_growth and algorithmic_efficiency linearly based on this factor.
+For the v1.0 iteration: Implement the Iman-Conover method. This algorithm is mathematically necessary because it preserves the exact marginal distributions, such as the triangular and lognormal inputs, while inducing a specified Spearman rank correlation matrix.
+Iman-Conover Algorithm Summary:
+Generate independent marginal samples for all variables using Latin Hypercube Sampling.
+Generate a target rank correlation matrix.
+Perform a Cholesky decomposition on the target rank correlation matrix.
+Generate a matrix of independent standard normal random variables.
+Multiply the normal matrix by the Cholesky lower triangular matrix to induce Pearson correlation in the normal space.
+Rank the columns of the correlated normal matrix.
+Sort the original independent Latin Hypercube samples to exactly match the rank ordering of the correlated normal matrix.
+Long-Tail Mixture Distribution:
+Utilise numpy.random.choice to select between the primary domain model and the late-tail model based on the 0.85 base_model_weight.
+If the late tail is triggered, draw the sample from scipy.stats.lognorm, shifting the origin to the late_tail_start_year of 2040. This structural shift is critical to prevent the fat right tail from artificially pulling the median backward into the 2020s during aggregation.
+Maximum Stage Gating:
+Utilise the numpy.maximum.reduce() function across the arrays representing the prerequisite stages to properly vectorize the parallel capability calculations, avoiding iterative loops that degrade simulation performance.
+Source Table with URLs
+Source ID	Author / Organisation	Title / Topic	URL
+[cite: 3]	AI 2027 Tracker	METR Time Horizon Doubling Prediction	https://ai2027-tracker.com/predictions/metr-doubling/
+[cite: 1, 2, 4]	METR	Time Horizon 1.1 Update & Methodology	https://metr.org/blog/2026-1-29-time-horizon-1-1/
+[cite: 16, 17, 21, 22]	Epoch AI	GATE: Modeling the trajectory of AI	https://epoch.ai/publications/announcing-gate
+[cite: 11, 12, 14, 18]	AI Futures	AI Futures Timelines and Takeoff Model	https://www.aifuturesmodel.com/
+[cite: 15, 18]	Tom Davidson / OpenPhil	Full Takeoff Model / Compute-Centric Framework	https://coefficientgiving.org/research/what-a-compute-centric-framework-says-about-takeoff-speeds/
+[cite: 30, 31, 32]	AI Impacts / Grace et al.	2023 Expert Survey on Progress in AI (ESPAI)	https://aiimpacts.org/how-should-we-analyse-survey-forecasts-of-ai-timelines/
+[cite: 38, 39, 40]	SCSP / RAND / BIS	US Framework for AI Diffusion / Export Controls	https://www.rand.org/pubs/perspectives/PEA3776-1.html
+[cite: 41, 42, 44]	Anthropic / GovAI	Responsible Scaling Policy (RSP) v3.0 Update	https://www.governance.ai/analysis/anthropics-rsp-v3-0-how-it-works-whats-changed-and-some-reflections
+[cite: 26, 27, 28]	Various / SciPy	Iman-Conover Method / Python Probabilit	https://towardsdatascience.com/journey-to-monte-carlo-mc-simulations-with-correlated-variables-in-python-1aef84d5742d/
+[cite: 34, 35, 36, 47]	Metaculus	Various Forecasts (AGI, ASI, Economic Growth)	https://www.metaculus.com
+Confidence Table
+Analytical Claim	Relevant Metric	Recommended Value	Uncertainty / Range	Confidence Level
+Task horizon fundamentally captures compute scaling	Percentage of horizon explained by compute and algorithmic progress	80%	70% – 85%	High
+AGI-to-ASI Phase Overlap accelerates timelines	Overlap Coefficient	0.35	0.15 – 0.65	Medium
+Compute and Algorithmic Progress Rank Correlation	Spearman Rank Correlation (ρ)	0.50	0.30 – 0.65	Medium-High
+Long Tail Probability indicating systemic bottlenecks	Probability of ASI arriving after 2100	13.5%	10% – 22%	High
+Governance and safety frameworks delay internal capability	Boolean addition to internal ASI	False	N/A	High
+Immediate Repo Changes Codex Should Make
+Instruct the Codex architecture to execute the following ten structural modifications to the forecasting codebase and configuration files:
+Refactor AGI Prerequisite Logic: Rewrite the AGI capability threshold calculation to utilise np.maximum.reduce() across the coding_automation, long_horizon_agent, and general_capability arrays, discarding the current additive or independent probability tree structures.
+Remove Task Horizon as an Independent Primary Driver: Decouple agent_time_horizon_doubling from the upstream compute calculation matrix. Re-implement it strictly as a downstream capability signal derived from effective_compute, and introduce a heavy penalty algorithm for structural double-counting if the user attempts to override it manually.
+Implement the Phase Overlap Mathematical Structure: Introduce the phase_overlap_coefficient definition within the base_forecast_inputs.yaml schema and update the effective_agi_to_asi_lag core calculation to multiply the naive sum of sequential lags by (1 - phase_overlap_coefficient).
+Split Governance Variables into Distinct Vectors: Delete the generic governance_delay_months variable entirely. Add compute_governance_friction_months, deployment_governance_delay_months, and secrecy_visibility_delay_months to the YAML schemas to accurately reflect targeted policy mechanics.
+Refactor Public versus Internal ASI Date Calculations: Update the Python modelling core to output two distinct timeline dates: internal_ASI_month and public_ASI_month. Ensure compute_governance_friction is applied upstream of internal_ASI_month, while applying deployment and secrecy delays strictly in the delta between the internal and public dates.
+Implement the Mixture Distribution for Long Tails: Add a dedicated sampling branch in the Monte Carlo statistical engine that reads the boolean long_tail_adjustment.enabled. If true, sample a binomial indicator using late_tail_weight to route samples into a shifted lognormal distribution for late-arriving timelines.
+Add the Iman-Conover Correlator Skeleton: For the immediate v0.2 patch, implement a scenario-based correlation scalar algorithm. Prepare for v1.0 by creating a new utility module, iman_conover.py, designed to ingest Latin Hypercube Sampling arrays and a target Spearman correlation matrix, subsequently returning the rank-ordered arrays.
+Update the YAML Correlation Matrix Configuration: Inject the exact correlation_matrix snippet detailed in this report into the configuration files to explicitly link effective compute, algorithmic efficiency, and agent task horizon mathematically.
+Audit and Rename the R&D Automation Variables: Rename or heavily annotate the variables leading up to AGI to clarify that pre-AGI coding automation is a distinct, max-gated phase compared to post-AGI research taste automation.
+Add Output Validation Unit Tests: Write a rigorous unit test, test_no_timeline_inversion.py, to mathematically ensure that public_ASI_month >= internal_ASI_month >= AGI_month and AGI_month >= current_date hold strictly true across all generated Monte Carlo samples, explicitly validating the new governance splits and phase overlap caps.
+
+metr.org
+Task-Completion Time Horizons of Frontier AI Models - METR
+Opens in a new window
+
+metr.org
+Measuring AI Ability to Complete Long Tasks - METR
+Opens in a new window
+
+ai2027-tracker.com
+METR time horizon doubles every 4 months - AI 2027 Tracker
+Opens in a new window
+
+metr.org
+Time Horizon 1.1 - METR
+Opens in a new window
+
+theaidigest.org
+A new Moore's Law for AI agents - AI Digest
+Opens in a new window
+
+epoch.ai
+METR Time Horizons - Epoch AI
+Opens in a new window
+
+tobyord.com
+The Scaling Paradox - Toby Ord
+Opens in a new window
+
+epoch.ai
+The least understood driver of AI progress - Epoch AI
+Opens in a new window
+
+lesswrong.com
+Catch-Up Algorithmic Progress Might Actually be 60× per Year - LessWrong
+Opens in a new window
+
+aisi.gov.uk
+How fast is autonomous AI cyber capability advancing? | AISI Work - AI Security Institute
+Opens in a new window
+
+aifuturesmodel.com
+AI Futures Model
+Opens in a new window
+
+aifuturesmodel.com
+AI Futures Model: Timelines & Takeoff
+Opens in a new window
+
+unknown_url
+Opens in a new window
+
+alignmentforum.org
+AI Futures Timelines and Takeoff Model: Dec 2025 Update - AI Alignment Forum
+Opens in a new window
+
+coefficientgiving.org
+What a Compute-Centric Framework Says About Takeoff Speeds | Coefficient Giving
+Opens in a new window
+
+epoch.ai
+GATE: Modeling the trajectory of AI and automation - Epoch AI
+Opens in a new window
+
+arxiv.org
+GATE: An Integrated Assessment Model for AI Automation - arXiv
+Opens in a new window
+
+lesswrong.com
+AI Futures Timelines and Takeoff Model: Dec 2025 Update - LessWrong
