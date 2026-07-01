@@ -32,6 +32,8 @@ DERIVED_COLUMNS = [
     "long_horizon_agent_months",
     "general_capability_months",
     "agi_arrival_months",
+    "raw_research_takeoff_lag_months",
+    "effective_research_takeoff_lag_months",
     "raw_agi_to_asi_lag_months",
     "effective_agi_to_asi_lag_months",
     "internal_asi_arrival_months",

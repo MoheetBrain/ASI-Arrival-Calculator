@@ -49,5 +49,6 @@ def test_phase_overlap_compresses_the_raw_lag():
         simulations["effective_agi_to_asi_lag_months"].mean()
         < simulations["raw_agi_to_asi_lag_months"].mean()
     )
+    # v0.5: phase overlap is a beta on the audited support [0.30, 0.85].
     overlap = simulations["phase_overlap_coefficient"].to_numpy()
-    assert np.all((overlap >= 0.15) & (overlap <= 0.65))
+    assert np.all((overlap >= 0.30) & (overlap <= 0.85))

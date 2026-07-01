@@ -1,5 +1,29 @@
 # ASI Arrival Forecast
 
+> **Status warning (v0.5.0):** This repository is an experimental structural
+> forecast, NOT a consensus prediction. It runs in a **fast-takeoff regime**: the
+> post-AGI cognitive lags (AI R&D and superhuman-researcher lags) are tagged
+> `stress_test` / `aggressive` in `evidence_tables/v0_5_parameter_sources.csv`, not
+> baseline empirical estimates. Every live parameter now traces to a source in that
+> table, but the headline dates below sit **years earlier than expert surveys**
+> (ESPAI HLMI 2047, Bio Anchors 2052). Treat the output as "what a sourced but
+> aggressive parameter set implies", not "when ASI will arrive". Not preprint-ready
+> as a consensus forecast.
+
+## How this forecast compares to external timelines
+
+| Model / survey | 10% | 50% (median) | 90% / tail |
+|---|---|---|---|
+| **This model — AGI** (fast-takeoff regime) | ~2030 | **~2031** | ~2057 |
+| ESPAI 2023 (HLMI) | – | 2047 | beyond 2100 |
+| ESPAI 2023 (full automation of labor) | – | 2116 | beyond 2200 |
+| Cotra Bio Anchors (TAI) | 2031 | 2052 | >2100 |
+
+The model's AGI median (~2031) equals Bio Anchors' **10th percentile** and is ~16 years
+earlier than the ESPAI HLMI median. This gap is driven mainly by the aggressive
+cognitive-lag assumptions (see `results/v0_5_pull_forward_ablation.csv`); it is a
+property of the chosen priors, not an independent empirical result.
+
 ## Forecasting AGI and ASI separately
 
 This repository runs a public, auditable Monte Carlo forecast for two related but distinct targets:

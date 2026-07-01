@@ -1,4 +1,9 @@
-"""Vectorized Monte Carlo simulation for the AGI-to-ASI forecast (v1.0)."""
+"""Vectorized Monte Carlo simulation for the AGI-to-ASI forecast (v0.4.0).
+
+All structural constants are read from YAML (no hidden Python defaults): the
+double-count dampening exponent, the long-horizon threshold hours, the baseline
+progress rates, and the long-tail sigma / bio-anchor median year / lag tail median.
+"""
 
 from __future__ import annotations
 
@@ -10,14 +15,14 @@ from .iman_conover import build_correlation_matrix, induce_rank_correlation
 from .model import (
     agi_arrival_months,
     coding_automation_months,
-    effective_agi_to_asi_lag_months,
+    effective_research_takeoff_lag_months,
     internal_asi_arrival_months,
     long_horizon_agent_months,
     progress_adjusted_doubling_months,
     public_asi_arrival_months,
-    raw_agi_to_asi_lag_months,
+    raw_research_takeoff_lag_months,
 )
-from .uncertainty import apply_long_tail_mixture, sample_parameter, triangular_sample
+from .uncertainty import apply_long_tail_mixture, sample_parameter
 
 
 # Macro drivers whose joint draw is corrected by the correlation matrix.
@@ -26,12 +31,6 @@ CORRELATED_DRIVERS = [
     "algorithmic_efficiency_x_per_year",
     "agent_time_horizon_doubling_months",
 ]
-
-# ANSWERS.txt long-tail anchor: Biological Anchors median Transformative AI ~2052.
-BIO_ANCHOR_MEDIAN_YEAR = 2052
-# Modeling choice for the AGI-to-ASI lag tail: a multi-year stall if recursive
-# self-improvement hits an asymptotic limit (months).
-LAG_LATE_TAIL_MEDIAN_MONTHS = 60.0
 
 
 def _sample_named(
@@ -51,8 +50,8 @@ def _sample_governance(
     key: str,
     sims: int,
 ) -> np.ndarray:
-    """Sample one targeted governance vector (triangular low/mode/high)."""
-    return triangular_sample(rng, config["governance"][key], sims, name=key)
+    """Sample one targeted governance vector (dispatches on its distribution)."""
+    return sample_parameter(rng, config["governance"][key], sims, name=key)
 
 
 def _month_labels(month_indices: np.ndarray) -> list[str]:
@@ -71,6 +70,29 @@ def simulate_forecast(
     seed = int(seed if seed is not None else simulation_config["random_seed"])
     if sims <= 0:
         raise ValueError("sims must be positive")
+
+    # --- Structural constants from YAML (no hidden defaults) -------------------
+    structural = config["structural_adjustments"]
+    baselines = config["baseline_progress_rates"]
+    long_tail_cal = config["long_tail_calibration"]
+    dampening_exponent = float(
+        structural["task_horizon_double_count_dampening_exponent"]["value"]
+    )
+    task_horizon_threshold_hours = float(
+        structural["task_horizon_threshold_hours"]["value"]
+    )
+    baseline_compute = float(
+        baselines["effective_compute_growth_baseline_x_per_year"]["value"]
+    )
+    baseline_algo = float(
+        baselines["algorithmic_efficiency_baseline_x_per_year"]["value"]
+    )
+    long_tail_sigma = float(long_tail_cal["sigma"]["value"])
+    bio_anchor_median_year = int(long_tail_cal["bio_anchor_median_year"]["value"])
+    # lag_late_tail_median_months is retained in YAML for provenance/rollback but is
+    # NOT applied in v0.5: the recalibrated cognitive lags are small, so a 60-month
+    # cognitive-lag tail double-counts the physical stall now carried by the
+    # infrastructure_friction lognormal (asi.txt Q12/Q13). Long tail -> AGI date only.
 
     rng = np.random.default_rng(seed)
 
@@ -109,6 +131,7 @@ def simulate_forecast(
     )
 
     # --- Post-AGI transition lags ---------------------------------------------
+    # Cognitive R&D/takeoff lags (compressible by phase overlap).
     ai_rnd_lag = _sample_named(
         config, "asi_stage", rng, "ai_rnd_automation_lag_after_agi_months", sims
     )
@@ -116,10 +139,11 @@ def simulate_forecast(
         config, "asi_stage", rng, "superhuman_ai_researcher_lag_months", sims
     )
     takeoff_lag = _sample_named(config, "asi_stage", rng, "takeoff_lag_months", sims)
+    # Physical buildout lag (NOT compressible by phase overlap).
     infrastructure_friction = _sample_named(
         config, "asi_stage", rng, "infrastructure_friction_months", sims
     )
-    phase_overlap = triangular_sample(
+    phase_overlap = sample_parameter(
         rng, config["phase_overlap_coefficient"], sims, name="phase_overlap_coefficient"
     )
 
@@ -139,13 +163,20 @@ def simulate_forecast(
         horizon_doubling,
         effective_compute,
         algorithmic_efficiency,
+        baseline_compute,
+        baseline_algo,
+        dampening_exponent,
     )
     coding_months = coding_automation_months(
         current_horizon,
         coding_threshold,
         adjusted_doubling,
     )
-    long_horizon_months = long_horizon_agent_months(current_horizon, adjusted_doubling)
+    long_horizon_months = long_horizon_agent_months(
+        current_horizon,
+        adjusted_doubling,
+        task_horizon_threshold_hours,
+    )
     general_capability_months = coding_months + general_capability_lag
     agi_month_offsets = agi_arrival_months(
         coding_months,
@@ -155,15 +186,18 @@ def simulate_forecast(
         compute_gov_friction,
     )
 
-    raw_lag = raw_agi_to_asi_lag_months(
+    # Phase overlap compresses only the cognitive research/takeoff lag.
+    raw_research_takeoff = raw_research_takeoff_lag_months(
         ai_rnd_lag,
         sar_lag,
         takeoff_lag,
-        infrastructure_friction,
     )
-    effective_lag = effective_agi_to_asi_lag_months(raw_lag, phase_overlap)
+    effective_research_takeoff = effective_research_takeoff_lag_months(
+        raw_research_takeoff,
+        phase_overlap,
+    )
 
-    # --- Long-tail mixture (separate tails for AGI date and the lag) ----------
+    # --- Long-tail mixture (separate tails for AGI date and the cognitive lag) -
     start_index = month_to_index(simulation_config["start_month"])
     long_tail = config.get("long_tail_adjustment", {})
     if long_tail.get("enabled"):
@@ -171,29 +205,34 @@ def simulate_forecast(
         late_start_year = int(long_tail["late_tail_start_year"])
         late_start_offset = month_to_index(f"{late_start_year:04d}-01") - start_index
         agi_median_offset = max(
-            (BIO_ANCHOR_MEDIAN_YEAR - late_start_year) * 12.0, 12.0
+            (bio_anchor_median_year - late_start_year) * 12.0, 12.0
         )
+        # Long tail applies to the AGI date only (asi.txt Q13). It propagates to
+        # internal/public ASI additively; the physical-stall tail on the ASI side
+        # is carried by the infrastructure_friction lognormal, not a second tail.
         agi_month_offsets = apply_long_tail_mixture(
             agi_month_offsets,
             rng,
             late_tail_weight=late_weight,
             floor_offset_months=float(late_start_offset),
             median_offset_months=agi_median_offset,
-        )
-        effective_lag = apply_long_tail_mixture(
-            effective_lag,
-            rng,
-            late_tail_weight=late_weight,
-            floor_offset_months=0.0,
-            median_offset_months=LAG_LATE_TAIL_MEDIAN_MONTHS,
+            sigma=long_tail_sigma,
         )
 
-    internal_asi_offsets = internal_asi_arrival_months(agi_month_offsets, effective_lag)
+    # Infrastructure friction is added UNCOMPRESSED (physical, does not overlap).
+    internal_asi_offsets = internal_asi_arrival_months(
+        agi_month_offsets,
+        effective_research_takeoff,
+        infrastructure_friction,
+    )
     public_asi_offsets = public_asi_arrival_months(
         internal_asi_offsets,
         deployment_gov_delay,
         secrecy_visibility_delay,
     )
+
+    raw_total_lag = raw_research_takeoff + infrastructure_friction
+    effective_total_lag = effective_research_takeoff + infrastructure_friction
     agi_to_asi_lag = internal_asi_offsets - agi_month_offsets
     internal_to_public_delay = deployment_gov_delay + secrecy_visibility_delay
 
@@ -224,8 +263,10 @@ def simulate_forecast(
             "long_horizon_agent_months": long_horizon_months,
             "general_capability_months": general_capability_months,
             "agi_arrival_months": agi_month_offsets,
-            "raw_agi_to_asi_lag_months": raw_lag,
-            "effective_agi_to_asi_lag_months": effective_lag,
+            "raw_research_takeoff_lag_months": raw_research_takeoff,
+            "effective_research_takeoff_lag_months": effective_research_takeoff,
+            "raw_agi_to_asi_lag_months": raw_total_lag,
+            "effective_agi_to_asi_lag_months": effective_total_lag,
             "internal_asi_arrival_months": internal_asi_offsets,
             "public_asi_arrival_months": public_asi_offsets,
             "agi_to_asi_lag_months": agi_to_asi_lag,

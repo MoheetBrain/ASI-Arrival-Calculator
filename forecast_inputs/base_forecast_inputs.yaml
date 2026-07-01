@@ -20,19 +20,26 @@ author_prior:
 # (b) couples these three variables via the correlation_matrix below.
 # ---------------------------------------------------------------------------
 agi_stage:
+  # asi.txt Q2: frontier physical compute ~3.8x/yr (lognormal). Conceptual rename
+  # to physical_compute_growth deferred to avoid a repo-wide key rename.
   effective_compute_growth_x_per_year:
-    distribution: triangular
-    low: 2.0
-    mode: 3.4
-    high: 6.0
+    distribution: lognormal
+    low: 3.0
+    mode: 3.8
+    high: 4.5
+    mean: 3.77
+    std: 0.39
     unit: x/year
     evidence_category: intermediate
 
+  # asi.txt Q3: foundational pre-training algorithmic efficiency ~3x/yr (lognormal).
   algorithmic_efficiency_x_per_year:
-    distribution: triangular
-    low: 1.5
+    distribution: lognormal
+    low: 2.2
     mode: 3.0
-    high: 10.0
+    high: 5.0
+    mean: 3.2
+    std: 0.75
     unit: x/year
     evidence_category: intermediate
 
@@ -60,11 +67,14 @@ agi_stage:
     unit: human-hours
     evidence_category: intermediate
 
+  # asi.txt Q7: coding enables self-scaffolding, compressing the lag to generality.
   general_capability_lag_after_coding_months:
-    distribution: triangular
-    low: 0
-    mode: 9
-    high: 36
+    distribution: gamma
+    low: 1
+    mode: 4
+    high: 12
+    mean: 4.8
+    std: 2.5
     unit: months
     evidence_category: agi
 
@@ -85,48 +95,63 @@ agi_stage:
 # than strictly back-to-back (ANSWERS.txt "Phase-Overlap Problem").
 # ---------------------------------------------------------------------------
 asi_stage:
+  # asi.txt Q8: AI R&D is a subset of general SWE/math; automation ~co-emerges.
   ai_rnd_automation_lag_after_agi_months:
-    distribution: triangular
-    low: 3
-    mode: 12
-    high: 36
+    distribution: lognormal
+    low: 0
+    mode: 2
+    high: 8
+    mean: 2.6
+    std: 2.0
     unit: months
     evidence_category: intermediate
 
+  # asi.txt Q9: parallelised human-level researchers reach superhuman rapidly.
   superhuman_ai_researcher_lag_months:
-    distribution: triangular
-    low: 0
-    mode: 12
-    high: 48
+    distribution: gamma
+    low: 1
+    mode: 3
+    high: 12
+    mean: 4.1
+    std: 2.8
     unit: months
     evidence_category: asi
 
+  # asi.txt Q10: physical training-run duration floors the takeoff.
   takeoff_lag_months:
-    distribution: triangular
-    low: 3
-    mode: 18
-    high: 72
-    unit: months
-    evidence_category: asi
-
-  infrastructure_friction_months:
-    distribution: triangular
-    low: 0
+    distribution: lognormal
+    low: 2
     mode: 6
     high: 24
+    mean: 8.5
+    std: 5.2
+    unit: months
+    evidence_category: asi
+
+  # asi.txt Q12: grid interconnection + buildout hard-floor (NOT phase-compressed).
+  infrastructure_friction_months:
+    distribution: lognormal
+    low: 12
+    mode: 24
+    high: 60
+    mean: 28
+    std: 12
     unit: months
     evidence_category: intermediate
 
 # Fraction of the raw AGI-to-ASI sequential lag removed because the transition
 # stages parallelise and accelerate one another.
+# asi.txt Q11: continuous training/RSI implies deep concurrency; beta, mode 0.65.
 phase_overlap_coefficient:
-  distribution: triangular
-  low: 0.15
-  mode: 0.35
-  high: 0.65
+  distribution: beta
+  low: 0.30
+  mode: 0.65
+  high: 0.85
+  mean: 0.61
+  std: 0.15
   unit: fraction
   evidence_category: asi
-  description: "Fraction of AGI-to-ASI sequential lag subtracted due to the parallelisation of AI R&D automation and intelligence explosion takeoff."
+  description: "Fraction of the cognitive (R&D+researcher+takeoff) lag subtracted due to parallelisation. NOT applied to infrastructure_friction_months."
 
 # Fat-tail probability for systemic bottlenecks (data walls, energy/grid limits,
 # alignment/recursive-improvement failure). Restores non-zero mass past the
@@ -150,26 +175,92 @@ governance:
     high: 12
     unit: months
     evidence: "Tier 1 data centre permitting and domestic hardware friction; export controls bypassed by National Validated End User exemptions."
+  # asi.txt Q14: RSP v3.0 minimised hard pauses; safety testing 3-12 months.
   deployment_governance_delay_months:
     applies_to: public_asi_only
-    low: 2
+    low: 3
     mode: 6
-    high: 24
+    high: 12
     unit: months
     evidence: "RSP v3.0 red-teaming, safety evaluations, and government AISI audits prior to commercial release."
+  # asi.txt Q14: national-security classification of an internal ASI (gamma).
   secrecy_visibility_delay_months:
     applies_to: public_visibility_only
-    low: 1
-    mode: 6
-    high: 18
+    distribution: gamma
+    low: 3
+    mode: 9
+    high: 24
+    mean: 11
+    std: 6
     unit: months
     evidence: "Defense classification and national security restrictions on frontier capabilities."
 
 # Spearman rank correlations among the macro drivers. Signs encode that faster
 # compute/algo progress means a SHORTER (smaller) doubling time.
 correlation_matrix:
+  # asi.txt Q4: shared capital pool but fabrication lead-times cap the linkage at
+  # ~0.35 (down from 0.50); compute->doubling strengthened to -0.70.
   effective_compute_growth_x_per_year:
-    algorithmic_efficiency_x_per_year: 0.50
-    agent_time_horizon_doubling_months: -0.60
+    algorithmic_efficiency_x_per_year: 0.35
+    agent_time_horizon_doubling_months: -0.70
   algorithmic_efficiency_x_per_year:
     agent_time_horizon_doubling_months: -0.55
+
+# ---------------------------------------------------------------------------
+# Structural constants formerly hardcoded in Python (v0.4.0 calibration-prep).
+# These influence forecast output and are therefore exposed here with explicit
+# confidence and evidence_status. needs_research: true means NOT yet calibrated.
+# ---------------------------------------------------------------------------
+structural_adjustments:
+  task_horizon_double_count_dampening_exponent:
+    value: 0.5
+    unit: exponent
+    confidence: low
+    evidence_status: unsourced_model_judgement
+    description: "Dampens the effect of compute and algorithmic efficiency on METR-style task-horizon progress to reduce double-counting."
+    needs_research: true
+
+  task_horizon_threshold_hours:
+    value: 168
+    unit: hours
+    confidence: low
+    evidence_status: operational_threshold
+    description: "Human-equivalent task horizon threshold used as a rough long-horizon agent reliability gate."
+    needs_research: true
+
+long_tail_calibration:
+  enabled: true
+  sigma:
+    value: 0.76
+    confidence: medium
+    evidence_status: derived_from_espai_xpt_lognormal_fit
+    description: "asi.txt Q13: sigma = [ln(14)-ln(2)]/2.5631 = 0.76 from p10=2028, p90=2040. Full replacement of the mixture with a direct-lognormal AGI is deferred (would abandon structural-gate AGI)."
+    needs_research: true
+
+  bio_anchor_median_year:
+    value: 2052
+    confidence: medium
+    evidence_status: external_forecast_anchor
+    needs_research: true
+
+  lag_late_tail_median_months:
+    value: 60
+    confidence: low
+    evidence_status: retained_not_applied_v0_5
+    description: "RETAINED for provenance/rollback but NOT applied in v0.5: with the recalibrated small cognitive lags, a 60-month cognitive-lag tail double-counts the physical stall now modelled by infrastructure_friction (lognormal to 60mo). Long tail is applied to the AGI date only."
+    needs_research: true
+
+baseline_progress_rates:
+  effective_compute_growth_baseline_x_per_year:
+    value: 3.4
+    unit: x/year
+    confidence: medium
+    evidence_status: needs_current_epoch_citation
+    needs_research: true
+
+  algorithmic_efficiency_baseline_x_per_year:
+    value: 3.0
+    unit: x/year
+    confidence: medium
+    evidence_status: needs_current_epoch_or_openai_citation
+    needs_research: true

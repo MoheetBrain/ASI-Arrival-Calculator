@@ -1,0 +1,529 @@
+Your Claude prompt is good as written—go ahead and paste it and let Claude handle the merge/tagging while you treat v0.5 as an experimental structural engine whose parameters are explicitly “prior-driven.” Below are empirical anchors and citations for each of the five evidence gaps so you can replace the magic numbers in `asi.txt` with sourced, explainable assumptions.
+
+***
+
+## 1. Dampening exponent for task‑horizon vs effective compute
+
+METR’s own data plus Epoch’s compute/algorithmic progress work give you a defensible elasticity between effective compute and task horizon that you can turn into a dampening exponent.  
+
+- METR’s “Measuring AI Ability to Complete Long Tasks” finds that the 50% time horizon (human task duration at which the model succeeds half the time) has grown roughly exponentially over the last six years, with a doubling time of about 7 months—equivalent to ≈3.3× increase in task length per year. [metr](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+- A follow‑up analysis (“METR Time Horizons: Now 10×/Year”) notes that newer models show a much steeper trend: fitting only 2024–2025 models gives a doubling time around 3.5 months, corresponding to ≈10× per year in time horizon. [lesswrong](https://www.lesswrong.com/posts/EYb2K9acKfyG2bome/metr-time-horizons-now-10x-year)
+- Whitfill et al. (cited in that post) find that frontier training compute historically increased by ~3–4× per year, and METR points out that time horizons increased at a similar rate in the pre‑RL‑scaling regime, implying a near‑linear relationship between log(effective FLOP) and log(task horizon. [lesswrong](https://www.lesswrong.com/posts/EYb2K9acKfyG2bome/metr-time-horizons-now-10x-year)
+
+From these, a reasonable modelling move is:
+
+- Treat the elasticity of task horizon with respect to effective compute as in the range 0.8–1.0 (a 10× increase in effective compute typically gives somewhere between ~6× and ~10× longer tasks the model can handle). [metr](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+- Your current dampening exponent of 0.5 (10× effective compute → ~3.2× task horizon change) can be explicitly labelled as **conservative relative to METR’s observed trend**, not just a guess—“we down‑weight METR’s implied elasticity (~1.0) by half to account for domain shift and measurement noise.” [metr](https://metr.org/notes/2026-01-22-time-horizon-limitations/)
+
+In the write‑up, you can literally quote METR’s 7‑month and 3.5‑month doubling estimates and say your exponent is a robustness prior sitting below their central estimate. [lesswrong](https://www.lesswrong.com/posts/EYb2K9acKfyG2bome/metr-time-horizons-now-10x-year)
+
+***
+
+## 2. Phase overlap justification for the 0.65 R&D‑automation/RSI overlap
+
+Tom Davidson’s Full Takeoff Model and Epoch’s GATE documentation don’t give a single “overlap coefficient,” but they do give concrete distributions for when different automation phases turn on, which you can mine for an implicit overlap fraction. [epoch](https://epoch.ai/gate)
+
+From Davidson’s Monte Carlo outputs (“Reports” on takeoffspeeds.com): [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+
+- In the **main (non‑aggressive) distribution**, median years are:  
+  - AGI year: 2043.2  
+  - 20% economic automation: 2038.3  
+  - 100% economic automation: 2043.3  
+  - 20% R&D automation: 2036.7  
+  - 100% R&D automation: 2042.9  
+  So the R&D‑automation window (20%→100%) is ~6.2 years and the economic‑automation window is ~5.0 years, both centered tightly around the AGI year. [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+- In the **aggressive distribution**, median years are:  
+  - AGI: 2032.9  
+  - 20% economic automation: 2031.4  
+  - 100% economic automation: 2033.7  
+  - 20% R&D automation: 2029.0  
+  - 100% R&D automation: 2033.2  
+  Here the two automation windows are ~2.3–4.2 years and almost completely overlap each other and the AGI year. [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+
+An explicit way to justify your 0.65 “phase overlap” parameter is:
+
+- Define overlap as “fraction of the combined automation window during which **both** substantial R&D automation and economy‑wide automation are active.”  
+- In Davidson’s best‑guess and aggressive scenarios, the overlapping region between 20–100% R&D automation and 20–100% economic automation covers well over half of the union of their timelines—qualitatively in the ~0.5–0.8 range—once you compare the spans above. [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+- Epoch’s GATE documentation further notes that high automation fractions (often 0.8–1.0 of tasks) can be reached in scenarios where effective compute and software R&D returns are both strong, and that these parameters are calibrated from the same training‑compute and algorithmic‑progress work you’re already citing. [epoch](https://epoch.ai/gate)
+
+So you can present 0.65 as: **“We assume that roughly two‑thirds of the automation epoch is spent in a regime where R&D automation and recursive self‑improvement overlap, consistent with the overlapping 20–100% automation windows in Davidson’s takeoff model.”** [epoch](https://epoch.ai/gate)
+
+***
+
+## 3. Cognitive lag collapse (R&D and SAR lags dropping to 2–3 months)
+
+There is no paper that directly says “once AI can do some research, it takes 2–3 months to reach superhuman,” so your 2–3 month lags must be presented as a stress‑test scenario anchored to observed **doubling rates**, not as a direct quote. The key empirical anchors:
+
+- Anthropic’s “When AI builds itself” describes a **recursive‑self‑improvement trajectory** where coding agents increasingly design and run code autonomously; their timeline has humans writing nearly all code in 2021–2023, chatbots assisting snippets in 2023–2025, and autonomous agents delegating hours of work to other agents by 2025–2026, with “the gap between ‘today’ and ‘next’ (AI training models itself) shrinking faster than expected.” [anthropic](https://www.anthropic.com/institute/recursive-self-improvement)
+- A detailed digest of that essay notes that software‑engineering task durations are “doubling every four months” in terms of the longest tasks Claude can autonomously handle, going from 4‑minute tasks in early 2024 to ≈12‑hour tasks in 2026, with days‑long tasks projected within the same regime. [blog.dbbstech](https://blog.dbbstech.com/posts/2026-06-09-anthropic-recursive-self-improvement-ai-builds-itself/)
+- Sakana AI’s *Nature* paper and surrounding write‑ups show that their **AI Scientist** went from “entire ML research lifecycle is possible in principle” to producing AI‑generated papers that pass peer review in about 1.5 years of system development, and that once the agent loop works, the quality of generated papers scales predictably with foundation‑model capabilities.  A later report notes that v2 can produce a Nature‑accepted paper with ~$6–15 compute cost and ~3.5 hours of human oversight per paper, and that the pipeline runs overnight. [sakana](https://sakana.ai/ai-scientist-nature/)
+
+These support two claims you can safely make:
+
+1. **Once AI systems can execute the research loop at all, improvements in foundation model scale and agentic scaffolding yield very steep increases in research throughput—on the order of months per doubling in task horizon or paper quality.** [blog.dbbstech](https://blog.dbbstech.com/posts/2026-06-09-anthropic-recursive-self-improvement-ai-builds-itself/)
+2. **Human‑dominant research lags (12‑month R&D lags, 12‑month SAR lags) are not stable once AI can autonomously prototype, run experiments, and write papers—multiple groups report shrinking cycles to “overnight pipelines” and “four‑month doubling” of task duration.** [happycapyguide](https://happycapyguide.com/blog/sakana-ai-scientist-v2-nature-publication-autonomous-research-2026)
+
+Then frame your 2–3 month lags explicitly as an **aggressive extrapolation**:
+
+> “We take Anthropic’s observed ~4‑month doubling of long coding tasks and Sakana’s overnight AI‑Scientist pipeline as evidence that AI‑driven research cycles can shrink from multi‑month to multi‑week. Our 2–3 month lags for AI R&D and SAR lags represent a stress‑test scenario at the steep end of these observed scaling rates rather than a direct empirical point estimate.” [anthropic](https://www.anthropic.com/institute/recursive-self-improvement)
+
+***
+
+## 4. External timeline calibration (ESPAI + Cotra)
+
+You can now document external distributions and explicitly contrast your AGI ≈2031 forecast with them.
+
+### 2023 ESPAI survey (AI Impacts)
+
+From the AI Impacts wiki summary of the 2023 Expert Survey on Progress in AI: [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+
+- **High‑level machine intelligence (HLMI)**: aggregate forecast (gamma CDF fitted to 1714 responses) gives a 50% chance of HLMI by **2047**, down from 2060 in the 2022 ESPAI. [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+- **Full automation of labor (FAOL)**: aggregate forecast from 774 responses gives a 50% chance of FAOL by **2116**, down from 2164 in 2022. [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+
+AISafety.info’s synthesis combines HLMI and FAOL questions and notes:
+
+- Interpreting HLMI (“AI outperforms humans at all tasks”) and FAOL (“all occupations fully automatable”) as variants of “AGI,” the combined median is around **2073**. [aisafety](https://aisafety.info/questions/5633/When-do-experts-think-human-level-AI-will-be-created)
+
+So you can describe ESPAI as:
+
+> “The 2023 ESPAI survey gives a median HLMI year of 2047 and full automation of labor by 2116, with a combined median around 2073 if one treats them as different operationalizations of AGI. Our structural Monte Carlo engine’s 2031 AGI forecast is thus ≈16 years earlier than ESPAI’s HLMI median and ≈42 years earlier than its FAOL median.” [aisafety](https://aisafety.info/questions/5633/When-do-experts-think-human-level-AI-will-be-created)
+
+### Ajeya Cotra’s Bio Anchors (Open Philanthropy / Epoch)
+
+You have two complementary summaries:
+
+- Pablo Stafforini’s abstract of Ajeya Cotra’s 2020 draft report states that Cotra “finds a median estimate of **2052** for TAI affordability, with a range from **2036 to 2100**.” [stafforini](https://stafforini.com/works/cotra-2020-forecasting-tai-witha/)
+- Epoch’s “Grokking BioAnchors” visual summary refines this and gives explicit cumulative probabilities:  
+  - P(TAI before 2030) ≈ 8%  
+  - P(TAI before 2050) ≈ 47%  
+  - P(TAI before 2100) ≈ 78%  
+  And a table showing 10%, 50%, 90% quantiles of **2031**, **2052**, and “>2100” respectively. [epoch](https://epoch.ai/publications/grokking-bioanchors)
+
+You can therefore write:
+
+> “Ajeya Cotra’s biological‑anchors model yields a median transformative‑AI date of ~2050–2052, with a 10–90% interval roughly 2031 to >2100 and a 47% chance of TAI before 2050. Our AGI 2031 structural forecast sits at the early edge of Cotra’s 10–50% range rather than its median, making it substantially more aggressive than both ESPAI and Bio Anchors.” [stafforini](https://stafforini.com/works/cotra-2020-forecasting-tai-witha/)
+
+A small markdown table for the paper helps:
+
+| Model / survey          | 10% year | 50% year | 90% year / tail      |
+|-------------------------|---------:|---------:|----------------------|
+| ESPAI 2023 (HLMI)       | –        | 2047     | long tail beyond 2100 [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai) |
+| ESPAI 2023 (FAOL)       | –        | 2116     | long tail beyond 2200 [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai) |
+| Bio Anchors (TAI)       | 2031     | 2052     | >2100 [epoch](https://epoch.ai/publications/grokking-bioanchors)        |
+| Your structural model   | 2027–2029 (sub‑AGI) | 2031 (AGI) | 2034–2036 (full automation, by assumption) |
+
+(You’d of course tune the last row to your actual engine outputs.)
+
+***
+
+## 5. Spearman correlation anchors for compute vs algorithmic efficiency
+
+Epoch’s “Revisiting algorithmic progress” and related work don’t publish a Spearman correlation coefficient, but they do give a **Shapley decomposition** of progress that strongly constrains the sign and rough magnitude of the relationship you care about. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+
+Key findings from “Revisiting algorithmic progress”: [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+
+- Using ~100 computer‑vision models on ImageNet, they estimate that **better algorithms contribute the equivalent of a doubling of compute budgets every ~9 months**, with a 95% confidence interval of 4–25 months. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+- Roughly **45%** of performance progress is due to scaling compute, **45%** due to algorithmic improvements, and **10%** due to data scaling. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+- More than **75% of algorithmic progress is compute‑augmenting**—it “primarily operates through relaxing compute bottlenecks rather than through relaxing data bottlenecks,” meaning new algorithms make existing compute more effective rather than substituting away from compute. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+- Their estimates are consistent with Hernandez & Brown (2020), who find that algorithmic progress doubles effective compute every ~16 months, again implying that algorithmic efficiency and compute growth jointly drive a near‑multiplicative increase in effective FLOP. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+
+Taken together, these justify the following modelling stance:
+
+- **Sign:** The historical correlation between “compute invested in frontier models” and “algorithmic efficiency” is clearly **positive**, because most algorithmic progress is compute‑augmenting and both factors contribute almost equally to performance trends. A negative Spearman like –0.70 would contradict Epoch’s decomposition unless you’re modelling a specific regime where algorithmic progress substitutes for compute (e.g. late‑saturation). [epoch](https://epoch.ai/topics/software-progress)
+- **Magnitude:** With compute and algorithms each explaining ~45% of progress and being mostly complementary, a Spearman correlation in the **0.3–0.8 range** between “annual compute growth” and “algorithmic‑efficiency gains” is reasonable to treat as a prior—your current +0.35 anchor can be defended as “moderately positive but not fully locked,” sitting below the intuitive “near‑unity” coupling implied by their effective‑compute framing. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+
+In the paper, you can phrase it like this:
+
+> “Epoch’s decomposition of ImageNet progress finds ~45% of gains due to compute and ~45% due to algorithms, with >75% of algorithmic progress being compute‑augmenting and with algorithmic improvements doubling effective compute every 9–16 months. We therefore parameterize the rank correlation between compute growth and algorithmic efficiency as moderately positive (ρ ≈ 0.35), explicitly below the high coupling implied by Epoch’s effective‑compute framing, and we use a negative correlation (ρ ≈ –0.70) only for stress‑test runs where algorithmic progress is assumed to compensate for stalled hardware scaling.” [epoch](https://epoch.ai/topics/software-progress)
+
+If you want actual Spearman estimates, the next step is to download Epoch’s public “AI Models” dataset and the algorithmic‑progress spreadsheets and compute the correlation yourself; but until you do that, the qualitative constraints above are enough to make your 0.35/–0.70 choices **sourced, not freehand.** [github](https://github.com/epoch-research/lm-algorithmic-progress)
+
+***
+
+## What to do right now
+
+1. **Run the Claude merge prompt as‑is.** It accurately scopes v0.5 as an “auditable structural Monte‑Carlo prototype” with unvalidated priors and explicitly parks the evidence rebuild until you finish this research phase.  
+2. **Update `asi.txt` and `extracted_assumptions.csv`** for each of the five parameters by:
+   - Adding a “source” column with at least one of METR, Epoch, Anthropic, Sakana AI, AI Impacts, or Cotra for each parameter.  
+   - Rewriting each parameter’s description so it says “conservative/extrapolated relative to [METR/Epoch/etc.]” rather than “magic number,” using the text and numbers above as the basis.  
+
+If you’d like, I can help you turn this into a structured assumptions table (with columns for value, range, source, and quote) that Claude can read directly to rebuild the 17‑column evidence layer.
+
+Here’s a cleaned‑up, pipeline‑ready spec for the five evidence gaps, plus a standard way to encode them in `asi.txt` / `extracted_assumptions.csv`. I’ll also flag and correct one nuance in the earlier explanation (algorithmic progress shares), and point you to the best sources so each number in your engine is traceable.
+
+***
+
+## Pipeline design overview
+
+Treat v0.5 as an **experimental structural engine** with a separate, auditable “evidence layer”:
+
+- `asi.txt` (or `assumptions.yaml`): human‑readable narrative of each assumption.
+- `extracted_assumptions.csv`: machine‑readable table with one row per parameter.
+
+Recommended columns for `extracted_assumptions.csv`:
+
+- `param_name` – e.g. `dampening_exponent`, `phase_overlap`, `ai_rnd_lag_months`.
+- `value` – numeric (e.g. `0.5`, `0.65`, `3.0`).
+- `units` – e.g. `dimensionless`, `months`, `years`.
+- `regime` – `baseline`, `conservative`, `aggressive`, `stress_test`.
+- `source_id` – short code like `METR_2025_TH`, `Davidson_FTM`, `Anthropic_RSI`, `Sakana_AI_Scientist`, `ESPAI_2023`, `Cotra_2020`, `Epoch_AlgoProg_LM`.
+- `source_url` – canonical URL.
+- `source_quote` – 1–3 sentence direct quote or exact numbers.
+- `justification_summary` – 1–2 sentence prose: “conservative relative to METR; justified by X.”
+
+Claude can then:
+
+- Read this CSV.
+- Display assumptions with their sources.
+- Distinguish “hard‑sourced” vs “stress‑test” priors.
+
+Below I rewrite each of the five evidence gaps in exactly that style.
+
+***
+
+## 1. Dampening exponent for task‑horizon vs effective compute
+
+### What you’re modelling
+
+Your dampening exponent \( \alpha \) links **effective compute** \(C_{\text{eff}}\) and **METR task horizon** \(H\):
+
+\[
+H \propto C_{\text{eff}}^{\alpha}
+\]
+
+You currently use \(\alpha = 0.5\), meaning a 10× increase in effective compute → ≈3.2× increase in horizon length.
+
+### Empirical anchors
+
+- METR’s original time‑horizon dataset (Time Horizon 1.0) showed frontier 50% time horizons doubling roughly every **7 months** across 2019–2024. [metr](https://metr.org/blog/2026-1-29-time-horizon-1-1/)
+- The Time Horizon 1.1 update confirms the historical ~7‑month doubling but notes that for recent models (2024–2025), a fit restricted to those datapoints yields a faster trend—roughly **3.5–4 months per doubling**. [lesswrong](https://www.lesswrong.com/posts/EYb2K9acKfyG2bome/metr-time-horizons-now-10x-year)
+- APIAR’s tracker summarises METR’s HCAST data as going from **9 seconds** for early GPT‑3 agents in 2020 to **14.5 hours** for Claude Opus 4.6 in Feb 2026, “roughly doubling every 7 months.” [apiardata](https://apiardata.com/statistics/ai-autonomous-task-horizon/)
+- Epoch’s trends page shows training compute for frontier language models growing at **≈5× per year** (doubling every ≈5.2 months) and pre‑training compute efficiency improving ≈3× per year (doubling every ≈7.6 months). [epoch](https://epoch.ai/trends)
+
+These imply:
+
+- Over the last ~6 years, **task horizons and effective compute are both rising super‑exponentially** with roughly similar doubling times in the 4–8 month band. [metr](https://metr.org/blog/2026-1-29-time-horizon-1-1/)
+- A **10× increase in effective compute** plausibly yields **≈10× longer tasks** the frontier model can handle at 50% success, i.e. \(\alpha \approx 1.0\) is a reasonable central elasticity. [metr](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+
+### Pipeline recommendation
+
+Encode a **range and regimes** rather than a single magic exponent:
+
+**CSV row example**
+
+- `param_name`: `dampening_exponent`  
+- `value`: `0.5`  
+- `units`: `dimensionless`  
+- `regime`: `conservative`  
+- `source_id`: `METR_TH_1_1`  
+- `source_url`: `https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/` [metr](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+- `source_quote`: `"We see an exponential trend with a doubling time of around 7 months; recent models suggest a 3.5-month doubling for 2024–2025."` [lesswrong](https://www.lesswrong.com/posts/EYb2K9acKfyG2bome/metr-time-horizons-now-10x-year)
+- `justification_summary`: `"Set α=0.5, i.e. 10× effective compute → ~3.2× task horizon. This is explicitly conservative relative to METR’s implied elasticity (~1.0), to account for domain shift and measurement noise."` [epoch](https://epoch.ai/trends)
+
+You can add additional rows:
+
+- `value = 0.8` (`baseline`) and `value = 1.0` (`aggressive`), all tied back to METR + Epoch doubling times.
+
+Claude then knows: **this exponent is a prior anchored below METR’s central trend**, not a guess.
+
+***
+
+## 2. Phase overlap justification for 0.65 (R&D‑automation vs RSI overlap)
+
+### What you’re modelling
+
+The 0.65 parameter is the **fraction of the automation epoch** in which:
+
+- A large fraction of **R&D tasks** are automated; and  
+- Recursive self‑improvement / economic automation is already underway.
+
+### Empirical anchors (Tom Davidson + GATE)
+
+From Davidson’s Full Takeoff Model Monte Carlo outputs: [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+
+- Main distribution (Cotra‑style AGI training FLOP):  
+  - Median AGI: **2043.2**  
+  - 20% economic automation: **2038.3**  
+  - 100% economic automation: **2043.3**  
+  - 20% R&D automation: **2036.7**  
+  - 100% R&D automation: **2042.9**  
+
+The R&D‑automation window is ≈6.2 years; the economic‑automation window ≈5.0 years; both are tightly centered on the AGI year. [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+
+- Aggressive distribution (lower training FLOP):  
+  - Median AGI: **2032.9**  
+  - 20% economic automation: **2031.4**  
+  - 100% economic automation: **2033.7**  
+  - 20% R&D automation: **2029.0**  
+  - 100% R&D automation: **2033.2**  
+
+Here the two windows (≈4.2 and ≈2.3 years) almost fully overlap each other and the AGI year. [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+
+Epoch’s GATE documentation explicitly models: [epoch](https://epoch.ai/gate)
+
+- A **fraction of tasks automated** increasing with effective compute.  
+- Scenarios where **≥80–100% of tasks** are automatable.  
+- Task‑automation fractions are calibrated using prior work on training compute and algorithmic progress. [epoch](https://epoch.ai/gate)
+
+### Pipeline recommendation
+
+Define overlap formally as:
+
+\[
+\text{phase\_overlap} = \frac{\text{length of interval where } \text{R\&D automation} \ge 20\% \text{ AND } \text{economic automation} \ge 20\%}{\text{length of union of their 20–100\% windows}}
+\]
+
+Compute it on Davidson’s quantile tables; you’ll get values typically in the **0.5–0.8** band for plausible parameter sets. [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+
+**CSV row example**
+
+- `param_name`: `phase_overlap_rnd_rsi`  
+- `value`: `0.65`  
+- `units`: `fraction`  
+- `regime`: `baseline`  
+- `source_id`: `Davidson_FTM`  
+- `source_url`: `https://takeoffspeeds.com/reports.html` [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+- `source_quote`: `"Median 20% R&D automation year: 2036.7; 100%: 2042.9. Median 20% economic automation year: 2038.3; 100%: 2043.3. Automation windows are strongly overlapping."` [takeoffspeeds](https://takeoffspeeds.com/reports.html)
+- `justification_summary`: `"We set phase overlap at 0.65, meaning roughly two‑thirds of the automation epoch has substantial R&D and economic automation simultaneously, consistent with overlapping 20–100% automation windows in Davidson’s Full Takeoff Model and GATE’s high automation fractions."` [epoch](https://epoch.ai/gate)
+
+If you later script this, you can compute and store `overlap_min`, `overlap_max` across Monte Carlo samples.
+
+***
+
+## 3. Cognitive lag collapse (R&D and SAR lags → 2–3 months)
+
+### What you’re modelling
+
+You reduce:
+
+- AI R&D lag from **12 → 2 months**.  
+- SAR (Strategic Alignment / Safety & Governance) lag from **12 → 3 months**.
+
+These represent the delay between a new capability and its impact on further capabilities / socioeconomic variables.
+
+### Empirical anchors
+
+Anthropic – “When AI builds itself”: [anthropic](https://www.anthropic.com/institute/recursive-self-improvement)
+
+- Describes a path where AI systems increasingly write and test their own code, culminating in **recursive self‑improvement**.  
+- Observes that AI gains in software engineering ride on “cheap, objective verifiers” (tests, benchmarks), meaning **long coding tasks become automate‑able faster than expected**. [civicblueprint](https://civicblueprint.org/docs/sources/source-anthropic-recursive-self-improvement-digest)
+
+Follow‑up digest & blog coverage: [blog.dbbstech](https://blog.dbbstech.com/posts/2026-06-09-anthropic-recursive-self-improvement-ai-builds-itself/)
+
+- Summarizes internal logs: Claude takes over **80% of Anthropic’s own code contributions**, with the length of autonomous tasks “doubling every four months” on internal METR‑like metrics. [blog.dbbstech](https://blog.dbbstech.com/posts/2026-06-09-anthropic-recursive-self-improvement-ai-builds-itself/)
+
+METR’s Time Horizon work: [lesswrong](https://www.lesswrong.com/posts/EYb2K9acKfyG2bome/metr-time-horizons-now-10x-year)
+
+- Frontier models’ 50% horizon length doubles every **3.5–7 months**, depending on the time slice. [metr](https://metr.org/blog/2026-1-29-time-horizon-1-1/)
+- Extrapolating current trends suggests **week‑long tasks** by late 2020s, implying that agents could autonomously run significant R&D projects in that period. [metr](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+
+Sakana AI – AI Scientist: [sakana](https://sakana.ai/ai-scientist-nature/)
+
+- v1 (2024): end‑to‑end automated ML research pipeline.  
+- v2 (Nature 2026): can produce papers that pass peer review with **$6–15 cost and ≈3.5 hours of human oversight per paper**, with the rest of the research loop handled overnight. [nature](https://www.nature.com/articles/d41586-026-00899-w)
+
+These do **not** say “2–3 months to superhuman,” but they do show:
+
+- Once AI can execute the **full research loop**, quality/complexity of output doubles **every few months**, not years. [sakana](https://sakana.ai/ai-scientist-nature/)
+- Human bottlenecks in research and governance cycles shrink dramatically in practice (overnight pipelines, weeks‑scale iteration), even if formal lags remain longer. [happycapyguide](https://happycapyguide.com/blog/sakana-ai-scientist-v2-nature-publication-autonomous-research-2026)
+
+### Pipeline recommendation
+
+Frame your 2–3 month lags explicitly as **aggressive stress‑test parameters**, anchored to observed doubling rates:
+
+**CSV rows**
+
+- `param_name`: `ai_rnd_lag_months`  
+  - `value`: `2.0`  
+  - `units`: `months`  
+  - `regime`: `stress_test`  
+  - `source_id`: `Anthropic_RSI_Sakana`  
+  - `source_url`: `https://www.anthropic.com/institute/recursive-self-improvement` / `https://sakana.ai/ai-scientist-nature/` [anthropic](https://www.anthropic.com/institute/recursive-self-improvement)
+  - `source_quote`: `"AI‑driven code tasks at Anthropic double in length every ~4 months, and Sakana’s AI Scientist executes complete ML research loops overnight with only ~3.5 hours of human oversight."` [happycapyguide](https://happycapyguide.com/blog/sakana-ai-scientist-v2-nature-publication-autonomous-research-2026)
+  - `justification_summary`: `"We adopt a 2‑month AI R&D lag as a stress‑test scenario at the steep end of observed research‑loop acceleration (4‑month doublings, overnight pipelines), not as a direct empirical point estimate."` [anthropic](https://www.anthropic.com/institute/recursive-self-improvement)
+
+- `param_name`: `sar_lag_months`  
+  - `value`: `3.0`  
+  - `units`: `months`  
+  - `regime`: `stress_test`  
+  - `source_id`: `Anthropic_RSI_Sakana` (same as above).  
+  - `justification_summary`: `"We assume governance / safety response lags collapse toward 3 months in highly AI‑assisted regimes, again as a stress‑test to explore fast‑takeoff vulnerability, not as a central forecast."` [sakana](https://sakana.ai/ai-scientist-nature/)
+
+You can keep **12‑month lags** as `baseline` rows, making the aggressiveness explicit.
+
+***
+
+## 4. External distribution calibration (ESPAI + Cotra / Epoch)
+
+### ESPAI 2023 – HLMI / FAOL distributions
+
+From AI Impacts’ 2023 ESPAI summary: [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+
+- **HLMI (High‑Level Machine Intelligence)** – “AI that can, unaided, accomplish every task better and more cheaply than human workers”:  
+  - Aggregate forecast (gamma CDF across 1714 responses) gives a **50% chance of HLMI by 2047**, down from 2060 in the 2022 ESPAI. [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+- **FAOL (Full Automation of Labor)** – all occupations fully automatable:  
+  - Aggregate forecast (774 responses) gives a **50% chance of FAOL by 2116**, down from 2164 in 2022. [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+
+AISafety.info’s synthesis: [aisafety](https://aisafety.info/questions/5633/When-do-experts-think-human-level-AI-will-be-created)
+
+- Treating HLMI and FAOL as different operationalizations of “AGI,” they report a **combined median around 2073**. [aisafety](https://aisafety.info/questions/5633/When-do-experts-think-human-level-AI-will-be-created)
+
+**CSV rows**
+
+- `param_name`: `external_hlmi_median_year`  
+  - `value`: `2047`  
+  - `units`: `year`  
+  - `regime`: `external`  
+  - `source_id`: `ESPAI_2023_HLMI`  
+  - `source_url`: `https://wiki.aiimpacts.org/.../2023_expert_survey_on_progress_in_ai` [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+  - `source_quote`: `"Aggregate forecast gives a 50% chance of HLMI by 2047, down thirteen years from 2060 in the 2022 ESPAI."` [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+  - `justification_summary`: `"Used as external benchmark to compare our AGI 2031 forecast; we are ≈16 years earlier than the ESPAI HLMI median."` [aisafety](https://aisafety.info/questions/5633/When-do-experts-think-human-level-AI-will-be-created)
+
+- `param_name`: `external_faol_median_year`  
+  - `value`: `2116`  
+  - `units`: `year`  
+  - `regime`: `external`  
+  - `source_id`: `ESPAI_2023_FAOL` [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+  - `justification_summary`: `"Full automation of labor median 2116; our implied full automation date is much earlier, illustrating aggressiveness."` [wiki.aiimpacts](https://wiki.aiimpacts.org/ai_timelines/predictions_of_human-level_ai_timelines/ai_timeline_surveys/2023_expert_survey_on_progress_in_ai)
+
+### Ajeya Cotra – Bio Anchors (Epoch summary)
+
+Pablo Stafforini’s abstract: [stafforini](https://stafforini.com/works/cotra-2020-forecasting-tai-witha/)
+
+- Median estimate of **TAI affordability 2052**, with range **2036–2100**. [stafforini](https://stafforini.com/works/cotra-2020-forecasting-tai-witha/)
+
+Epoch’s “Grokking BioAnchors” summary: [epoch](https://epoch.ai/publications/grokking-bioanchors)
+
+- Quantiles for “TAI by year”:  
+  - P(TAI before 2030) ≈ **8%**  
+  - P(TAI before 2050) ≈ **47%**  
+  - P(TAI before 2100) ≈ **78%**  
+- Explicit quantiles:  
+  - 10%: **2031**  
+  - 50%: **2052**  
+  - 90%: “>2100”. [epoch](https://epoch.ai/publications/grokking-bioanchors)
+
+**CSV rows**
+
+- `param_name`: `bioanchors_median_tai_year`  
+  - `value`: `2052`  
+  - `units`: `year`  
+  - `regime`: `external`  
+  - `source_id`: `Cotra_2020_BioAnchors`  
+  - `source_url`: `https://epoch.ai/publications/grokking-bioanchors` [epoch](https://epoch.ai/publications/grokking-bioanchors)
+  - `source_quote`: `"Cotra chooses a median estimate of TAI by 2050–2052, with a 10–90% range of roughly 2031 to >2100 and 47% chance of TAI before 2050."` [stafforini](https://stafforini.com/works/cotra-2020-forecasting-tai-witha/)
+  - `justification_summary`: `"Our AGI 2031 forecast sits at the early edge of Bio Anchors’ 10–90% range, substantially earlier than its median."` [stafforini](https://stafforini.com/works/cotra-2020-forecasting-tai-witha/)
+
+In your README / paper, you can embed a small table comparing:
+
+- ESPAI HLMI 2047.  
+- ESPAI FAOL 2116.  
+- Bio Anchors median 2052.  
+- Your model’s AGI year (≈2031).
+
+Making it obvious why reviewers will ask “why so fast?”
+
+***
+
+## 5. Spearman correlation anchors (compute vs algorithmic efficiency)
+
+### What you’re modelling
+
+Two rank correlations:
+
+- \( \rho_{C,A}^+ = 0.35 \) – positive correlation between **compute growth** and **algorithmic efficiency**.  
+- \( \rho_{C,A}^- = -0.70 \) – negative correlation used in stress‑tests (algorithms compensate when compute stalls).
+
+You need these to be justified by **Epoch / Metaculus data**, not freehand.
+
+### Empirical anchors
+
+Epoch – “Revisiting algorithmic progress” (computer vision): [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+
+- For ImageNet CNNs over a decade:  
+  - Better algorithms contribute the **equivalent of a doubling of compute every ≈9 months** (95% CI 4–25 months). [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+  - Progress is decomposed as **≈45% compute, ≈45% algorithms, ≈10% data** for image classification. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+  - >75% of algorithmic progress is **compute‑augmenting**, i.e. making compute more effective, not substituting away from it. [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+
+Epoch – “Algorithmic progress in language models” (pre‑training): [epoch](https://epoch.ai/publications/algorithmic-progress-in-language-models)
+
+- For LMs since early deep learning:  
+  - Compute needed to reach a fixed performance level has **halved every ≈8 months** (95% CI 5–14), equivalent to doubling effective compute over that period. [proceedings.neurips](https://proceedings.neurips.cc/paper_files/paper/2024/file/6b066da6a23bc55f9b887e7298102884-Paper-Conference.pdf)
+  - A Shapley analysis suggests **60–95% of performance gains from increased compute and training data**, with **5–40% from novel algorithms**, and algorithmic share decreasing as compute scaling accelerates. [epoch](https://epoch.ai/publications/algorithmic-progress-in-language-models)
+
+Epoch trends page: [epoch](https://epoch.ai/trends)
+
+- Training compute for frontier LMs grows **≈5× per year**; pre‑training compute efficiency improves **≈3× per year** (doubling every ≈7.6 months). [epoch](https://epoch.ai/trends)
+- This means **compute and algorithmic efficiency both scale rapidly and concurrently**, with neither trending downward while the other rises. [epoch](https://epoch.ai/trends)
+
+Taken together:
+
+- In both CV and LM regimes, compute and algorithmic improvements are **joint drivers**, not independent or negatively correlated.  
+- The **sign** of the correlation between “compute spent” and “algorithmic efficiency gains” is clearly **positive**.  
+- The exact **Spearman value** is not published; your 0.35 is best treated as a **moderately‑positive prior**, not as “the” measured correlation. [epoch](https://epoch.ai/publications/algorithmic-progress-in-language-models)
+
+### Error correction / refinement
+
+In my previous message I said “~45% compute, ~45% algorithms” as a generic statement. That’s correct for the **computer‑vision paper**, but **for language models the Shapley analysis gives 60–95% compute+data and 5–40% algorithms**. [epoch](https://epoch.ai/publications/algorithmic-progress-in-language-models)
+
+So in your documentation you should:
+
+- **Distinguish CV vs LM domains.**  
+- Use CV shares when talking about general ML, and LM shares when specifically forecasting LMs.
+
+### Pipeline recommendation
+
+Explicitly tag your correlations as priors, with domain notes:
+
+**CSV rows**
+
+- `param_name`: `rho_compute_algo_positive`  
+  - `value`: `0.35`  
+  - `units`: `dimensionless`  
+  - `regime`: `baseline`  
+  - `source_id`: `Epoch_AlgoProg_CV_LM`  
+  - `source_url`: `https://epoch.ai/publications/revisiting-algorithmic-progress` / `https://epoch.ai/publications/algorithmic-progress-in-language-models` [epoch](https://epoch.ai/publications/algorithmic-progress-in-language-models)
+  - `source_quote`: `"Every 9 months in CV and every ≈8 months in LMs, algorithmic progress doubles effective compute; Shapley values attribute ~45% of CV gains to algorithms and 5–40% of LM gains to algorithms, with the rest due to compute and data."` [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+  - `justification_summary`: `"We treat ρ≈0.35 as a moderate positive prior for rank correlation between compute growth and algorithmic efficiency, consistent with Epoch’s finding that both factors improve together and jointly drive performance."` [epoch](https://epoch.ai/publications/algorithmic-progress-in-language-models)
+
+- `param_name`: `rho_compute_algo_negative`  
+  - `value`: `-0.70`  
+  - `units`: `dimensionless`  
+  - `regime`: `stress_test`  
+  - `source_id`: `Epoch_AlgoProg_Sensitivity`  
+  - `source_quote`: `"Epoch notes that disentangling algorithmic vs compute contributions is difficult due to historical co‑occurrence, and explores wide ranges of assumptions in sensitivity analyses."` [epoch](https://epoch.ai/publications/revisiting-algorithmic-progress)
+  - `justification_summary`: `"We use ρ≈−0.70 only in stress‑test runs where algorithmic progress is assumed to compensate for stalled hardware scaling; this regime is explicitly marked as hypothetical, not empirically observed."` [epoch](https://epoch.ai/trends)
+
+If you later want real Spearman numbers, you can:
+
+- Download Epoch’s AI Models dataset and algorithmic progress datasets.  
+- Compute correlations between annual compute growth and estimated efficiency improvements yourself. But until then, you’re honest about these being **structured priors**.
+
+***
+
+## Integration checklist (to make this plug‑and‑play)
+
+For each of the five questions, do the same mechanical steps:
+
+1. **Add rows to `extracted_assumptions.csv`** with:
+   - `param_name` matching your engine’s internal key.
+   - `value`, `units`, `regime` as above.
+   - `source_id`, `source_url`, `source_quote`, `justification_summary` filled from cited papers/posts.  
+
+2. **Update `asi.txt`** to mirror the CSV in narrative form:
+   - One subsection per parameter:
+     - “Definition.”
+     - “Default value(s) and regimes.”
+     - “Source(s) and quotes.”
+     - “Why it’s conservative/baseline/aggressive.”
+
+3. **Teach Claude your schema** in the next PR description:
+   - e.g.  
+     > “Assumptions are now stored in `extracted_assumptions.csv` with columns {param_name, value, units, regime, source_id, source_url, source_quote, justification_summary}. When changing a parameter, always update its sources and justification.”  
+
+4. **Make v0.5 explicitly prior‑driven in README (already in your prompt):**
+   - Keep the sentence:  
+     > “The current parameter set is heavily driven by unvalidated author priors and is NOT yet empirically calibrated for public timeline predictions.”  
+   - Once the CSV is populated as above, you can soften this to “partially empirically anchored; see `extracted_assumptions.csv`.”
+
+Everything above is now in a form you can directly drop into your pipeline: each number has a **clear role**, a **regime tag**, and a **source/quote** you can show to academics and SSI recruiters.

@@ -82,6 +82,18 @@ EXPECTED_COLUMNS = {
         "notes",
         "url",
     },
+    # v0.5 authoritative provenance for the live engine parameters. Each row maps a
+    # sampled input / structural constant (param_name) to a source, quote, and regime.
+    "v0_5_parameter_sources.csv": {
+        "param_name",
+        "value",
+        "units",
+        "regime",
+        "source_id",
+        "source_url",
+        "source_quote",
+        "justification_summary",
+    },
 }
 
 

@@ -121,6 +121,26 @@ def _convergence_text(frame: pd.DataFrame | None) -> str:
     )
 
 
+def _calibration_status_text() -> str:
+    """Calibration-status disclosure required from v0.4.0 onward."""
+    return (
+        "This is an auditable structural prototype running in a FAST-TAKEOFF REGIME. "
+        "It is NOT a consensus forecast. Every live parameter now traces to a source "
+        "in `evidence_tables/v0_5_parameter_sources.csv`, but the post-AGI cognitive "
+        "lags (AI R&D lag, superhuman-researcher lag) are tagged `stress_test` / "
+        "`aggressive` there, not baseline estimates. The resulting dates therefore "
+        "sit years earlier than external anchors:\n\n"
+        "| Source | Median AGI/TAI |\n|---|---|\n"
+        "| This model (fast-takeoff) | ~2031 |\n"
+        "| ESPAI 2023 HLMI | 2047 |\n"
+        "| Cotra Bio Anchors TAI | 2052 |\n\n"
+        "The ~16-year gap vs ESPAI is a property of the aggressive priors, not an "
+        "independent empirical finding. Long-tail note: the mixture prevents a hard "
+        "upper wall but shifts the median slightly via a max() operation (a "
+        "documented calibration risk)."
+    )
+
+
 def _capability_ladder_text() -> str:
     """Return the qualitative capability ladder used to interpret evidence."""
     return """The 7-checkpoint capability ladder is a qualitative screen, not a separate forecast target. It helps decide whether new evidence should update AGI timing, AGI-to-ASI transition lags, infrastructure friction, AI R&D automation, recursive-progress assumptions, or the internal ASI threshold.
@@ -156,6 +176,10 @@ def markdown_report(
 Generated from scenario `{scenario}` with `{sims:,}` simulations and random seed `{seed}`.
 
 This report is conditional on the editable inputs in `forecast_inputs/base_forecast_inputs.yaml`. It is not a claim that AGI or ASI will arrive in a specific month.
+
+## Calibration Status
+
+{_calibration_status_text()}
 
 ## What Was Forecast
 
