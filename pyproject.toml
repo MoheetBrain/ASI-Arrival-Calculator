@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "asi-arrival-forecast"
-version = "0.5.0"
+version = "0.5.1"
 description = "A public Monte Carlo forecasting engine for AGI and ASI arrival months using a stage-gated AGI-to-ASI model."
 readme = "README.md"
 requires-python = ">=3.10"

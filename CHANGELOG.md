@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.1
+- Added `evidence_tables/v0_5_parameter_sources.csv`: every live engine parameter
+  now traces to a source_id, URL, quote, and regime tag (METR, Epoch, Davidson FTM,
+  Anthropic, Sakana, ESPAI, Cotra) from asi.txt + perplexity.txt research.
+- Honest regime tagging: the post-AGI cognitive lags are marked `stress_test` /
+  `aggressive`, NOT baseline — the model runs in a fast-takeoff regime.
+- Added external calibration (ESPAI 2047, Cotra 2052) to README + report; the model
+  is ~16y earlier than ESPAI HLMI, a property of the aggressive priors.
+- Enforcement test `test_parameter_traceability.py` blocks unsourced parameters.
+- NOTE: the values are now *traceable and regime-labelled*, but NOT a consensus
+  forecast. Still not preprint-ready as a prediction.
+
 ## 0.5.0
 Empirical recalibration from the asi.txt evidence audit (14-variable Q1-Q14).
 

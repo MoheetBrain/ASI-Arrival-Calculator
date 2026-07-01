@@ -124,19 +124,20 @@ def _convergence_text(frame: pd.DataFrame | None) -> str:
 def _calibration_status_text() -> str:
     """Calibration-status disclosure required from v0.4.0 onward."""
     return (
-        "This is an auditable structural prototype, not a preprint-grade model. "
-        "Several constants are currently model judgements rather than calibrated, "
-        "sourced values: the task-horizon double-count dampening exponent, the "
-        "long-horizon threshold hours, the long-tail sigma and bio-anchor median "
-        "year, and the AGI-to-ASI lag late-tail median. These are now exposed in "
-        "`forecast_inputs/base_forecast_inputs.yaml` and tagged with explicit "
-        "`confidence` and `evidence_status` fields; several are marked "
-        "`needs_research: true`. The model is NOT preprint-ready until the evidence "
-        "tables are rebuilt and these parameters are empirically calibrated.\n\n"
-        "Long-tail note: the long-tail mixture is designed to prevent a hard upper "
-        "wall. It may shift the median slightly because late-tail samples are "
-        "applied with a max() operation. This is intentional but is treated as a "
-        "calibration risk until externally validated."
+        "This is an auditable structural prototype running in a FAST-TAKEOFF REGIME. "
+        "It is NOT a consensus forecast. Every live parameter now traces to a source "
+        "in `evidence_tables/v0_5_parameter_sources.csv`, but the post-AGI cognitive "
+        "lags (AI R&D lag, superhuman-researcher lag) are tagged `stress_test` / "
+        "`aggressive` there, not baseline estimates. The resulting dates therefore "
+        "sit years earlier than external anchors:\n\n"
+        "| Source | Median AGI/TAI |\n|---|---|\n"
+        "| This model (fast-takeoff) | ~2031 |\n"
+        "| ESPAI 2023 HLMI | 2047 |\n"
+        "| Cotra Bio Anchors TAI | 2052 |\n\n"
+        "The ~16-year gap vs ESPAI is a property of the aggressive priors, not an "
+        "independent empirical finding. Long-tail note: the mixture prevents a hard "
+        "upper wall but shifts the median slightly via a max() operation (a "
+        "documented calibration risk)."
     )
 
 
