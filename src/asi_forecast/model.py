@@ -1,16 +1,21 @@
-"""Stage-gated AGI-to-ASI structural equations (v1.0).
+"""Stage-gated AGI-to-ASI structural equations (v0.4.0 calibration-prep).
 
-This module implements the revised equations from ANSWERS.txt:
+All structural constants are now passed in explicitly (sourced from YAML by
+``monte_carlo.py``) rather than hardcoded here, so every number that influences
+the forecast is auditable in ``forecast_inputs/base_forecast_inputs.yaml``.
 
-1. Double-count fix: the empirical METR doubling already embeds compute and
-   algorithmic progress, so the compute/algo rescaling is dampened by a
-   sub-linear exponent instead of applied at full strength.
-2. AGI is a max-gate over its prerequisites (not a sum), plus the integration
-   lag and the internal compute-governance friction.
-3. The AGI-to-ASI lag is summed RAW and then compressed by
-   (1 - phase_overlap_coefficient) to credit parallel/overlapping stages.
-4. Governance is split: compute-governance friction is internal (folded into
-   AGI), while deployment + secrecy delays apply only to the public date.
+Key behaviours:
+
+1. Double-count fix: the compute/algo rescaling of the empirical METR doubling is
+   dampened by a sub-linear exponent (the empirical doubling already embeds those
+   drivers). The exponent and the baseline rates are YAML inputs.
+2. AGI is a max-gate over its prerequisites (not a sum), plus the integration lag
+   and the internal compute-governance friction.
+3. Phase overlap compresses ONLY the research/takeoff cognitive lags. Physical
+   infrastructure friction is added uncompressed (it cannot be assumed to
+   parallelise away).
+4. Governance is split: compute-governance friction is internal (folded into AGI),
+   while deployment + secrecy delays apply only to the public date.
 """
 
 from __future__ import annotations
@@ -18,36 +23,32 @@ from __future__ import annotations
 import numpy as np
 
 
-LONG_HORIZON_AGENT_THRESHOLD_HOURS = 168.0
-
-# Baseline combined progress used to normalise the doubling-time rescale.
-BASE_EFFECTIVE_COMPUTE_X_PER_YEAR = 3.4
-BASE_ALGORITHMIC_EFFICIENCY_X_PER_YEAR = 3.0
-
-# ANSWERS.txt "Double-Count Problem": multiplying the empirical doubling by the
-# full compute*algo ratio double-counts the very drivers that produced it. We
-# apply a sub-linear dampening exponent (effective_agent_progress =
-# task_horizon_growth_rate ** 0.5) so compute/algo still informs the doubling
-# but at reduced, non-double-counted strength.
-COMPUTE_PROGRESS_DAMPENING_EXPONENT = 0.5
-
-
 def progress_adjusted_doubling_months(
     agent_time_horizon_doubling_months: np.ndarray,
     effective_compute_growth_x_per_year: np.ndarray,
     algorithmic_efficiency_x_per_year: np.ndarray,
-    dampening_exponent: float = COMPUTE_PROGRESS_DAMPENING_EXPONENT,
+    baseline_effective_compute_x_per_year: float,
+    baseline_algorithmic_efficiency_x_per_year: float,
+    dampening_exponent: float,
 ) -> np.ndarray:
     """Adjust task-horizon doubling time by *dampened* compute/algo progress.
 
-    The speedup ratio (base_log / sampled_log) is raised to a sub-linear
-    exponent so that faster-than-baseline progress shortens the doubling time
-    only partially, avoiding the double-count of drivers already baked into the
-    empirical METR doubling.
+    The speedup ratio (base_log / sampled_log) is raised to ``dampening_exponent``
+    (sub-linear, e.g. 0.5) so that faster-than-baseline progress shortens the
+    doubling time only partially, avoiding the double-count of drivers already
+    baked into the empirical METR doubling. Baselines and exponent come from YAML.
+
+    ⚠️ SEMANTICS WARNING (do not blindly paste asi.txt Q1's value): here
+    ``exponent = 0`` means NO compute/algo rescale (full exclusion of the
+    double-count, i.e. asi.txt's "Formulation A"), and ``exponent = 1`` means the
+    FULL rescale (maximum double-count). asi.txt Q1 uses the opposite convention
+    ("1.0 = complete exclusion"), so setting this to 1.0 would MAXIMISE the
+    double-count. Rewiring to a true downstream (Formulation A) architecture is a
+    deferred structural change; until then this stays at the conservative 0.5.
     """
     combined_progress = effective_compute_growth_x_per_year * algorithmic_efficiency_x_per_year
     base_combined_progress = (
-        BASE_EFFECTIVE_COMPUTE_X_PER_YEAR * BASE_ALGORITHMIC_EFFICIENCY_X_PER_YEAR
+        baseline_effective_compute_x_per_year * baseline_algorithmic_efficiency_x_per_year
     )
     base_log_progress = np.log2(base_combined_progress)
     sampled_log_progress = np.maximum(np.log2(np.maximum(combined_progress, 1.0001)), 0.01)
@@ -71,9 +72,13 @@ def coding_automation_months(
 def long_horizon_agent_months(
     current_agent_task_horizon_hours: np.ndarray,
     adjusted_doubling_months: np.ndarray,
+    task_horizon_threshold_hours: float,
 ) -> np.ndarray:
-    """Estimate when one-week autonomous task reliability is reached."""
-    ratio = LONG_HORIZON_AGENT_THRESHOLD_HOURS / np.maximum(
+    """Estimate when the long-horizon task threshold (e.g. one week) is reached.
+
+    ``task_horizon_threshold_hours`` is a YAML input (no longer a hardcoded 168).
+    """
+    ratio = task_horizon_threshold_hours / np.maximum(
         current_agent_task_horizon_hours,
         0.001,
     )
@@ -102,40 +107,52 @@ def agi_arrival_months(
     )
 
 
-def raw_agi_to_asi_lag_months(
+def raw_research_takeoff_lag_months(
     ai_rnd_automation_lag_after_agi_months: np.ndarray,
     superhuman_ai_researcher_lag_months: np.ndarray,
     takeoff_lag_months: np.ndarray,
-    infrastructure_friction_months: np.ndarray,
 ) -> np.ndarray:
-    """Naive sequential sum of the post-AGI intelligence-explosion lags."""
+    """Naive sequential sum of the post-AGI COGNITIVE transition lags.
+
+    Infrastructure friction is intentionally excluded here: only software / R&D
+    stages are candidates for parallel overlap.
+    """
     return (
         ai_rnd_automation_lag_after_agi_months
         + superhuman_ai_researcher_lag_months
         + takeoff_lag_months
-        + infrastructure_friction_months
     )
 
 
-def effective_agi_to_asi_lag_months(
-    raw_lag_months: np.ndarray,
+def effective_research_takeoff_lag_months(
+    raw_research_takeoff_lag_months: np.ndarray,
     phase_overlap_coefficient: np.ndarray,
 ) -> np.ndarray:
-    """Compress the raw lag for parallel/overlapping transition stages."""
-    return raw_lag_months * (1.0 - phase_overlap_coefficient)
+    """Compress the cognitive research/takeoff lag for parallel/overlapping stages."""
+    return raw_research_takeoff_lag_months * (1.0 - phase_overlap_coefficient)
 
 
 def internal_asi_arrival_months(
     agi_months: np.ndarray,
-    effective_lag_months: np.ndarray,
+    effective_research_takeoff_lag_months: np.ndarray,
+    infrastructure_friction_months: np.ndarray,
 ) -> np.ndarray:
-    """Internal ASI = AGI + the overlap-compressed transition lag.
+    """Internal ASI = AGI + compressed cognitive lag + UNCOMPRESSED infra friction.
 
-    Governance is intentionally absent here: safety/export frameworks do not slow
-    a lab's secret internal achievement (governance_delay_added_to_internal_asi
-    = false). Internal compute-governance friction is already folded into AGI.
+    Software/R&D stages may overlap and are compressed by the phase-overlap
+    coefficient upstream. Physical data-centre buildout, power, and hardware
+    procurement (``infrastructure_friction_months``) cannot be assumed to overlap
+    away, so it is added at full size here.
+
+    Governance is intentionally absent: safety/export frameworks do not slow a
+    lab's secret internal achievement. Internal compute-governance friction is
+    already folded into AGI.
     """
-    return agi_months + effective_lag_months
+    return (
+        agi_months
+        + effective_research_takeoff_lag_months
+        + infrastructure_friction_months
+    )
 
 
 def public_asi_arrival_months(

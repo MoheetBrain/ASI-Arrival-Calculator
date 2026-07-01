@@ -1,5 +1,13 @@
 # ASI Arrival Forecast
 
+> **Status warning (v0.4.0):** This repository is currently an experimental
+> structural forecast. It is designed to expose assumptions, not to claim a final
+> AGI/ASI date. Several v0.4.0 parameters are explicit model judgements pending
+> empirical calibration (see the `structural_adjustments`, `long_tail_calibration`,
+> and `baseline_progress_rates` sections of
+> `forecast_inputs/base_forecast_inputs.yaml`, tagged with `confidence` and
+> `evidence_status`). It is not preprint-ready.
+
 ## Forecasting AGI and ASI separately
 
 This repository runs a public, auditable Monte Carlo forecast for two related but distinct targets:

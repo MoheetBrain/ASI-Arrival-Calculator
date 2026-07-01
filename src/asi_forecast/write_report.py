@@ -121,6 +121,25 @@ def _convergence_text(frame: pd.DataFrame | None) -> str:
     )
 
 
+def _calibration_status_text() -> str:
+    """Calibration-status disclosure required from v0.4.0 onward."""
+    return (
+        "This is an auditable structural prototype, not a preprint-grade model. "
+        "Several constants are currently model judgements rather than calibrated, "
+        "sourced values: the task-horizon double-count dampening exponent, the "
+        "long-horizon threshold hours, the long-tail sigma and bio-anchor median "
+        "year, and the AGI-to-ASI lag late-tail median. These are now exposed in "
+        "`forecast_inputs/base_forecast_inputs.yaml` and tagged with explicit "
+        "`confidence` and `evidence_status` fields; several are marked "
+        "`needs_research: true`. The model is NOT preprint-ready until the evidence "
+        "tables are rebuilt and these parameters are empirically calibrated.\n\n"
+        "Long-tail note: the long-tail mixture is designed to prevent a hard upper "
+        "wall. It may shift the median slightly because late-tail samples are "
+        "applied with a max() operation. This is intentional but is treated as a "
+        "calibration risk until externally validated."
+    )
+
+
 def _capability_ladder_text() -> str:
     """Return the qualitative capability ladder used to interpret evidence."""
     return """The 7-checkpoint capability ladder is a qualitative screen, not a separate forecast target. It helps decide whether new evidence should update AGI timing, AGI-to-ASI transition lags, infrastructure friction, AI R&D automation, recursive-progress assumptions, or the internal ASI threshold.
@@ -156,6 +175,10 @@ def markdown_report(
 Generated from scenario `{scenario}` with `{sims:,}` simulations and random seed `{seed}`.
 
 This report is conditional on the editable inputs in `forecast_inputs/base_forecast_inputs.yaml`. It is not a claim that AGI or ASI will arrive in a specific month.
+
+## Calibration Status
+
+{_calibration_status_text()}
 
 ## What Was Forecast
 

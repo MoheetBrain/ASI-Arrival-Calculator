@@ -17,14 +17,19 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
-DistributionName = Literal["triangular"]
+DistributionName = Literal["triangular", "lognormal", "gamma", "beta"]
 EvidenceCategory = Literal[
     "agi", "asi", "intermediate", "governance", "compute", "outside_forecast"
 ]
 
 
 class TriangularParameter(BaseModel):
-    """One editable triangular forecast input."""
+    """One editable forecast input.
+
+    Named for history; ``distribution`` may now be triangular, lognormal, gamma,
+    or beta. Non-triangular families are fitted by method-of-moments from
+    ``mean``/``std`` (or triangular-derived moments) and clipped to ``[low, high]``.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -35,11 +40,15 @@ class TriangularParameter(BaseModel):
     unit: str
     evidence_category: EvidenceCategory | None = None
     description: str | None = None
+    mean: float | None = None
+    std: float | None = None
 
     @model_validator(mode="after")
     def validate_ordering(self) -> "TriangularParameter":
         if self.low > self.mode or self.mode > self.high:
-            raise ValueError("triangular parameters require low <= mode <= high")
+            raise ValueError("parameters require low <= mode <= high")
+        if self.distribution == "beta" and self.high <= self.low:
+            raise ValueError("beta parameters require high > low")
         return self
 
 
@@ -63,11 +72,16 @@ class GovernanceParameter(BaseModel):
     high: float
     unit: str = "months"
     evidence: str | None = None
+    distribution: DistributionName = "triangular"
+    mean: float | None = None
+    std: float | None = None
 
     @model_validator(mode="after")
     def validate_ordering(self) -> "GovernanceParameter":
         if self.low > self.mode or self.mode > self.high:
             raise ValueError("governance parameters require low <= mode <= high")
+        if self.distribution == "beta" and self.high <= self.low:
+            raise ValueError("beta governance parameters require high > low")
         return self
 
 
@@ -110,6 +124,78 @@ class LongTailSpec(BaseModel):
         return self
 
 
+class _ConstantSpec(BaseModel):
+    """Base for an exposed structural constant (v0.4.0 calibration-prep).
+
+    Every constant that influences forecast output must carry a ``confidence`` and
+    an ``evidence_status`` so a reader can see which numbers are sourced and which
+    are unsourced model judgement. ``needs_research: true`` flags an uncalibrated
+    value.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    value: float
+    confidence: str
+    evidence_status: str
+    unit: str | None = None
+    description: str | None = None
+    needs_research: bool | None = None
+
+
+class DampeningExponentSpec(_ConstantSpec):
+    @model_validator(mode="after")
+    def validate_bounds(self) -> "DampeningExponentSpec":
+        if not (0.0 < self.value <= 1.0):
+            raise ValueError("dampening exponent must satisfy 0 < value <= 1")
+        return self
+
+
+class PositiveConstantSpec(_ConstantSpec):
+    @model_validator(mode="after")
+    def validate_positive(self) -> "PositiveConstantSpec":
+        if self.value <= 0.0:
+            raise ValueError("value must be > 0")
+        return self
+
+
+class NonNegativeConstantSpec(_ConstantSpec):
+    @model_validator(mode="after")
+    def validate_non_negative(self) -> "NonNegativeConstantSpec":
+        if self.value < 0.0:
+            raise ValueError("value must be >= 0")
+        return self
+
+
+class StructuralAdjustmentsSpec(BaseModel):
+    """Constants formerly hardcoded in the math core."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    task_horizon_double_count_dampening_exponent: DampeningExponentSpec
+    task_horizon_threshold_hours: PositiveConstantSpec
+
+
+class LongTailCalibrationSpec(BaseModel):
+    """Numeric constants behind the long-tail mixture."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = True
+    sigma: PositiveConstantSpec
+    bio_anchor_median_year: PositiveConstantSpec
+    lag_late_tail_median_months: NonNegativeConstantSpec
+
+
+class BaselineProgressRatesSpec(BaseModel):
+    """Baseline compute/algorithmic-efficiency rates used to normalise progress."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    effective_compute_growth_baseline_x_per_year: PositiveConstantSpec
+    algorithmic_efficiency_baseline_x_per_year: PositiveConstantSpec
+
+
 class SimulationSpec(BaseModel):
     """Simulation control parameters."""
 
@@ -145,6 +231,9 @@ class ForecastConfig(BaseModel):
     long_tail_adjustment: LongTailSpec
     governance: GovernanceSpec
     correlation_matrix: dict[str, dict[str, float]] | None = None
+    structural_adjustments: StructuralAdjustmentsSpec
+    long_tail_calibration: LongTailCalibrationSpec
+    baseline_progress_rates: BaselineProgressRatesSpec
 
     @field_validator("agi_stage")
     @classmethod

@@ -147,3 +147,52 @@ correlation_matrix:
     agent_time_horizon_doubling_months: -0.60
   algorithmic_efficiency_x_per_year:
     agent_time_horizon_doubling_months: -0.55
+
+structural_adjustments:
+  task_horizon_double_count_dampening_exponent:
+    value: 0.5
+    unit: exponent
+    confidence: low
+    evidence_status: unsourced_model_judgement
+    description: "Dampens compute/algorithmic-efficiency effect on task-horizon progress to reduce double-counting."
+    needs_research: true
+  task_horizon_threshold_hours:
+    value: 168
+    unit: hours
+    confidence: low
+    evidence_status: operational_threshold
+    description: "Human-equivalent long-horizon agent reliability gate."
+    needs_research: true
+
+long_tail_calibration:
+  enabled: true
+  sigma:
+    value: 0.8332
+    confidence: medium
+    evidence_status: derived_from_bio_anchors_style_lognormal_fit
+    needs_research: true
+  bio_anchor_median_year:
+    value: 2052
+    confidence: medium
+    evidence_status: external_forecast_anchor
+    needs_research: true
+  lag_late_tail_median_months:
+    value: 60
+    confidence: low
+    evidence_status: unsourced_model_judgement
+    description: "Manual placeholder for late AGI-to-ASI stall duration; must be calibrated."
+    needs_research: true
+
+baseline_progress_rates:
+  effective_compute_growth_baseline_x_per_year:
+    value: 3.4
+    unit: x/year
+    confidence: medium
+    evidence_status: needs_current_epoch_citation
+    needs_research: true
+  algorithmic_efficiency_baseline_x_per_year:
+    value: 3.0
+    unit: x/year
+    confidence: medium
+    evidence_status: needs_current_epoch_or_openai_citation
+    needs_research: true
