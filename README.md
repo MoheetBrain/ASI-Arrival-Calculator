@@ -1,237 +1,270 @@
-# ASI Arrival Forecast
+# The “Exam Deadline” Hypothesis: A Structural Monte Carlo Forecast of AGI and ASI Arrival
 
-> **Status warning (v0.5.0):** This repository is an experimental structural
-> forecast, NOT a consensus prediction. It runs in a **fast-takeoff regime**: the
-> post-AGI cognitive lags (AI R&D and superhuman-researcher lags) are tagged
-> `stress_test` / `aggressive` in `evidence_tables/v0_5_parameter_sources.csv`, not
-> baseline empirical estimates. Every live parameter now traces to a source in that
-> table, but the headline dates below sit **years earlier than expert surveys**
-> (ESPAI HLMI 2047, Bio Anchors 2052). Treat the output as "what a sourced but
-> aggressive parameter set implies", not "when ASI will arrive". Not preprint-ready
-> as a consensus forecast.
+## Abstract
 
-## How this forecast compares to external timelines
+This project presents an open-source structural Monte Carlo forecast of Artificial General Intelligence (AGI) and Artificial Superintelligence (ASI) arrival. The aim is not to claim certainty about a single date, but to replace vague timeline claims with an auditable probabilistic model whose assumptions, equations, and outputs can be inspected and challenged.
 
-| Model / survey | 10% | 50% (median) | 90% / tail |
-|---|---|---|---|
-| **This model — AGI** (fast-takeoff regime) | ~2030 | **~2031** | ~2057 |
-| ESPAI 2023 (HLMI) | – | 2047 | beyond 2100 |
-| ESPAI 2023 (full automation of labor) | – | 2116 | beyond 2200 |
-| Cotra Bio Anchors (TAI) | 2031 | 2052 | >2100 |
+The current v0.5.0 model forecasts AGI first, then models the uncertain transition from AGI to internal capability-and-agency ASI, and finally from internal ASI to public visibility or deployment. Under the current recalibrated parameter set, the model gives a median AGI arrival of **July 2031**, a median internal ASI arrival of **May 2034**, and a median public ASI visibility/deployment date of **November 2035**. The median AGI-to-internal-ASI transition is approximately **2.6 years**.
 
-The model's AGI median (~2031) equals Bio Anchors' **10th percentile** and is ~16 years
-earlier than the ESPAI HLMI median. This gap is driven mainly by the aggressive
-cognitive-lag assumptions (see `results/v0_5_pull_forward_ablation.csv`); it is a
-property of the chosen priors, not an independent empirical result.
+The forecast should be interpreted as a conditional result of the model assumptions, not as a definitive prediction. The repository is designed for adversarial review: all key assumptions are exposed, the code is reproducible, and the model can be rerun or modified by critics.
 
-## Forecasting AGI and ASI separately
+GitHub repository / working branch:
+https://github.com/MoheetBrain/ASI-Arrival-Calculator/pull/1
 
-This repository runs a public, auditable Monte Carlo forecast for two related but distinct targets:
+---
 
-1. **AGI / transformative general AI**
-2. **Capability-and-agency ASI**
+## 1. Motivation
 
-Most public evidence is about AGI, coding agents, compute, benchmarks, and AI R&D automation. ASI is further downstream. This repo therefore forecasts AGI first, then models the uncertain transition from AGI to ASI.
+A persistent weakness in AI safety, governance, and public discussion is the reliance on vague timeline claims such as “AGI in 5–20 years” or “superintelligence before the end of the decade.” Such claims are difficult to audit because they often hide the underlying causal structure.
 
-```text
-AGI capability threshold
-        |
-        v
-AI R&D automation
-        |
-        v
-superhuman AI researcher
-        |
-        v
-accelerated / recursive AI progress
-        |
-        v
-internal ASI
-        |
-        v
-public ASI
-```
+The “Exam Deadline” hypothesis starts from a simple idea: if the arrival of AGI or ASI is decision-relevant, then vague forecasts are not enough. Policy, safety, infrastructure, and alignment planning require more precise probabilistic timelines, even if the precision must be framed honestly.
 
-## Definitions
+This project therefore asks:
 
-**AGI** means an AI system that can perform or automate a very wide range of economically valuable cognitive tasks at approximately top-human or expert-human level, including software engineering, analysis, research assistance, planning, computer use, and general problem-solving across novel domains.
+> Given explicit assumptions about compute growth, algorithmic efficiency, agent reliability, AI R&D automation, takeoff dynamics, infrastructure friction, and governance delay, what month-level probability distribution follows for AGI and ASI arrival?
 
-**Capability-and-agency ASI** means an AI system or AI-agent system that can outperform top human teams across most important cognitive work, including AI research, software engineering, scientific discovery, mathematics, cybersecurity, strategy, and long-horizon autonomous tasks; can generalise to novel tasks; and can pursue objectives using planning, memory, tool use, self-correction, and coordination.
+The central contribution is not the exact date. The contribution is the auditable forecasting engine.
 
-## Why Split AGI And ASI?
+---
 
-- AGI and ASI are not the same.
-- AGI means broadly human/expert-level general capability.
-- ASI means beyond top human teams.
-- Most evidence directly informs AGI or intermediate milestones.
-- ASI is modelled as a later stage conditional on AGI plus AI R&D automation and takeoff dynamics.
+## 2. Definitions
 
-The model does **not** treat AGI evidence as direct ASI evidence.
+### Artificial General Intelligence
 
-## Refined 7-Checkpoint Capability Ladder
+In this project, AGI means an AI system that can perform or automate a very wide range of economically valuable cognitive tasks at approximately expert-human or top-human level. This includes software engineering, analysis, research assistance, planning, computer use, and general problem-solving across novel domains.
 
-The project also uses a refined 7-checkpoint capability ladder as a qualitative
-screen for interpreting new evidence. The ladder is not a separate forecast
-target. It helps decide whether an observation should update AGI timing,
-AGI-to-ASI transition lags, infrastructure friction, AI R&D automation, or the
-internal ASI threshold.
+### Capability-and-agency ASI
 
-```mermaid
-graph TD
-    classDef step fill:#f5f5f5,stroke:#1565c0,stroke-width:2px,color:#000
-    CP1[1. Contextual Invariance]:::step --> CP2[2. Formal Verification]:::step
-    CP2 --> CP3[3. Horizon-Unbounded Agency]:::step
-    CP3 --> CP4[4. Exascale Infrastructure]:::step
-    CP4 --> CP5[5. Recursive Iteration]:::step
-    CP5 --> CP6[6. Meta-Architectural Optimization]:::step
-    CP6 --> CP7[7. Asymmetric Divergence]:::step
-```
+Capability-and-agency ASI means an AI system or AI-agent system that can outperform top human teams across most important cognitive work, including AI research, software engineering, scientific discovery, mathematics, cybersecurity, strategy, and long-horizon autonomous tasks. It must also generalise to novel tasks and pursue objectives using planning, memory, tool use, self-correction, and coordination.
 
-1. **Contextual Invariance (memory)**  
-   Metric: lossless, deterministic semantic retrieval across a continuous
-   10^8-token context window, with less than 0.01% performance decay in
-   needle-in-a-haystack tracking.  
-   Why it matters: eliminates state drift across full codebases, scientific
-   literatures, enterprise logs, and long execution loops.
+This definition does not require proof of consciousness, emotion, or subjective experience. Those questions are important, but they are not used as the primary forecast target because they are not currently measurable in a way that would make the model auditable.
 
-2. **Autonomous Formal Verification (math)**  
-   Metric: independent, closed-loop formalization and proof generation for an
-   unverified mathematical conjecture or non-trivial software kernel using a
-   verified proof assistant such as Lean 4, with zero human prompting.  
-   Why it matters: creates a hard gate for verified reasoning and reduces human
-   review as a bottleneck for trustworthy code and logic changes.
+---
 
-3. **Horizon-Unbounded Agency (agency)**  
-   Metric: sustained, continuous execution of multi-turn, cross-domain
-   engineering objectives across a 336-hour (14-day) production run, with
-   dynamic self-correction, tool use, and a 0% fatal exception rate.  
-   Why it matters: moves the system from assistant behavior toward autonomous
-   employee behavior on large research and engineering projects.
+## 3. Forecast outputs
 
-4. **Exascale Infrastructure Hardening (compute)**  
-   Metric: sustained orchestration of a single distributed optical cluster
-   drawing >=1.2 GW of power, maintaining >99.99% hardware utilization and
-   fault-tolerant state checkpointing over a 30-day training window.  
-   Why it matters: shows that scaling is no longer just model-side capability;
-   it is industrial-scale compute, power, and reliability control.
+The current v0.5.0 recalibrated model gives the following median forecasts:
 
-5. **Recursive Synthetic Iteration (data)**  
-   Metric: monotonic, measurable capability gains across five consecutive
-   generations of fully synthetic, model-generated data loops, without model
-   collapse.  
-   Why it matters: breaks the bottleneck imposed by finite human-generated
-   training data.
+| Forecast target                    |   Median date |
+| ---------------------------------- | ------------: |
+| AGI arrival                        |     July 2031 |
+| Internal capability-and-agency ASI |      May 2034 |
+| Public ASI visibility/deployment   | November 2035 |
+| AGI → internal ASI lag             |    ~2.6 years |
+| Probability AGI arrives after 2060 |         ~3.8% |
 
-6. **Meta-Architectural Optimization (R&D)**  
-   Metric: automated design, compilation, and algorithmic validation of a novel
-   neural architecture or training paradigm that delivers a >=10% compute
-   efficiency gain, measured as FLOP reduction against state-of-the-art
-   baselines.  
-   Why it matters: turns AI into a direct AI R&D accelerator by finding
-   structural efficiencies humans missed.
+These dates are month-level medians. A median forecast means that, under the current model assumptions, half of simulated futures arrive before that month and half arrive after it.
 
-7. **Asymmetric Takeoff Divergence (takeoff)**  
-   Metric: cross-domain capability accumulation velocity exceeding 100x the
-   cumulative human engineering baseline per hour, driven by autonomous,
-   multi-tiered recursive self-improvement loops.  
-   Why it matters: identifies the regime where calendar time stops being a good
-   proxy for capability change.
+The model does not claim that AGI or ASI will definitely arrive in those months.
 
-## What Monte Carlo Means
+---
 
-Monte Carlo means running thousands or millions of possible futures by sampling uncertain inputs.
+## 4. Method summary
 
-The median is the 50/50 month: half the simulated futures arrive before it, half after it.
+The model uses a structural Monte Carlo pipeline rather than a trained AI model. This is deliberate. There is no historical dataset of previous ASI arrivals, so training a black-box machine learning model to predict ASI arrival directly would be methodologically weak.
 
-More simulations reduce numerical noise. They do not make bad assumptions true.
+Instead, the model uses a manually specified causal structure with uncertain parameters. It samples many possible futures from probability distributions over those parameters, then reports the resulting distribution over arrival months.
 
-## Architecture
+The model separates the forecast into stages:
+
+1. Strong coding automation
+2. Long-horizon agent reliability
+3. Broad AGI capability
+4. AI R&D automation
+5. Superhuman AI researcher capability
+6. Accelerated / recursive AI progress
+7. Internal capability-and-agency ASI
+8. Public ASI visibility/deployment
+
+The core structure is:
+
+AGI arrives when the model crosses the strongest bottleneck among coding automation, long-horizon agency, and general capability.
+
+Internal ASI arrives after AGI plus the compressed AGI-to-ASI transition, with physical infrastructure friction added separately.
+
+Public ASI arrives after internal ASI plus deployment governance and secrecy/visibility delay.
+
+---
+
+## 5. Core equations
+
+The current model uses the following simplified structure:
 
 ```text
-evidence_notes + evidence_tables
-        |
-        v
-forecast_inputs
-        |
-        v
-stage-gated AGI -> ASI simulation
-        |
-        v
-arrival month distributions
-        |
-        v
-forecast drivers
-        |
-        v
-latest report
+AGI_month =
+  max(
+    coding_automation_month,
+    long_horizon_agent_month,
+    general_capability_month
+  )
+  + agi_integration_lag
+  + compute_governance_friction
 ```
 
-Important files:
-
-- [forecast_inputs/base_forecast_inputs.yaml](forecast_inputs/base_forecast_inputs.yaml): empirical base inputs.
-- [forecast_inputs/author_prior_scenario.yaml](forecast_inputs/author_prior_scenario.yaml): separate July 2029 author-prior scenario.
-- [forecast_inputs/agi_definition.yaml](forecast_inputs/agi_definition.yaml): AGI definition.
-- [forecast_inputs/asi_definition.yaml](forecast_inputs/asi_definition.yaml): ASI definition.
-- [forecast_inputs/milestone_definitions.yaml](forecast_inputs/milestone_definitions.yaml): stage-gate definitions.
-- [forecast_inputs/capability_ladder.yaml](forecast_inputs/capability_ladder.yaml): qualitative 7-checkpoint capability ladder.
-- [evidence_tables/agi_evidence.csv](evidence_tables/agi_evidence.csv): AGI/TAI evidence.
-- [evidence_tables/asi_evidence.csv](evidence_tables/asi_evidence.csv): ASI/takeoff evidence.
-- [evidence_tables/intermediate_milestones.csv](evidence_tables/intermediate_milestones.csv): compute, coding, agents, AI R&D automation, and governance inputs.
-- [src/asi_forecast/monte_carlo.py](src/asi_forecast/monte_carlo.py): vectorized simulation.
-- [src/asi_forecast/model.py](src/asi_forecast/model.py): stage-gated equations.
-
-## Quickstart
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-asi-forecast run --target both --sims 100000
-asi-forecast explain-targets
-asi-forecast drivers
+```text
+raw_research_takeoff_lag =
+  ai_rnd_automation_lag
+  + superhuman_ai_researcher_lag
+  + takeoff_lag
 ```
 
-For a faster local check:
-
-```bash
-asi-forecast run --target both --sims 10000
+```text
+effective_research_takeoff_lag =
+  raw_research_takeoff_lag × (1 - phase_overlap_coefficient)
 ```
 
-## CLI
-
-```bash
-asi-forecast run --target agi --sims 100000
-asi-forecast run --target asi --sims 100000
-asi-forecast run --target both --sims 100000
-asi-forecast explain
-asi-forecast explain-targets
-asi-forecast inputs
-asi-forecast evidence
-asi-forecast drivers
-asi-forecast report
-asi-forecast clean-results
+```text
+internal_ASI_month =
+  AGI_month
+  + effective_research_takeoff_lag
+  + infrastructure_friction
 ```
 
-## Generated Results
+```text
+public_ASI_month =
+  internal_ASI_month
+  + deployment_governance_delay
+  + secrecy_visibility_delay
+```
 
-Generated files go to `results/`:
+The model explicitly separates physical infrastructure friction from software/R&D phase overlap. This matters because software research stages may overlap, but data centres, power constraints, hardware procurement, and deployment infrastructure cannot simply be compressed away by faster research loops.
 
-- `forecast_summary.csv`
-- `forecast_metrics.csv`
-- `latest_forecast_report.md`
-- `simulated_agi_arrival_months.csv`
-- `simulated_internal_asi_arrival_months.csv`
-- `simulated_public_asi_arrival_months.csv`
-- `simulated_agi_to_asi_lags.csv`
-- `arrival_probability_distribution.png`
-- `agi_to_asi_lag_distribution.png`
-- `forecast_drivers.csv`
-- `what_drives_the_forecast.png`
+---
 
-Generated results are ignored by git by default.
+## 6. Monte Carlo design
 
-## Status
+The model uses Monte Carlo simulation to generate many possible futures. Each run samples values for uncertain variables such as compute growth, algorithmic efficiency, agent task-horizon growth, AI R&D automation lag, takeoff lag, infrastructure friction, governance delay, and visibility delay.
 
-Experimental research prototype. Not investment, legal, policy, or safety advice.
+The current implementation includes:
 
-This repo is designed to be inspectable and editable. It should be judged by whether its assumptions are visible, its evidence is classified honestly, and its outputs do not overclaim.
+* lognormal, gamma, beta, and triangular distributions
+* bounded support for sampled variables
+* Iman-Conover rank-correlation induction to preserve non-normal marginals while introducing dependency between macro variables
+* an AGI-date long-tail mixture to avoid assigning zero probability to very late arrival
+* deterministic tests checking timeline ordering, including public ASI ≥ internal ASI ≥ AGI
+
+The v0.5.0 branch reports 33 passing tests. These tests verify software consistency and invariants, not scientific truth.
+
+---
+
+## 7. Why AGI and ASI are separated
+
+The model deliberately forecasts AGI and ASI separately.
+
+Most available evidence is about AGI, AI agents, coding benchmarks, compute scaling, benchmark progress, or AI R&D automation. Much less evidence directly measures ASI. Treating AGI evidence as direct ASI evidence would overclaim.
+
+The model therefore uses the following structure:
+
+```text
+AGI
+  → AI R&D automation
+  → superhuman AI researcher
+  → accelerated / recursive AI progress
+  → internal ASI
+  → public ASI
+```
+
+This distinction is central to the project. AGI is not assumed to equal ASI. The AGI-to-ASI lag is explicitly modelled as an uncertain distribution.
+
+---
+
+## 8. Current interpretation of the result
+
+The current output says:
+
+> Under the v0.5.0 recalibrated assumptions, the model’s median forecast is AGI in July 2031, internal ASI in May 2034, and public ASI visibility/deployment in November 2035.
+
+The most important interpretation is not merely the date. The important result is that the model implies a compressed AGI-to-ASI transition under an aggressive AI R&D automation regime.
+
+The current median AGI-to-internal-ASI lag is approximately 2.6 years. This is much shorter than a slow-takeoff view, but it remains conditional on the model’s assumptions about AI R&D automation, phase overlap, task-horizon progress, and takeoff dynamics.
+
+---
+
+## 9. Important limitations
+
+This model is not a peer-reviewed consensus forecast.
+
+The current model should be read as an auditable experimental prototype. Its key limitations are:
+
+1. Some parameters remain evidence-light or judgement-based.
+2. The evidence tables require further calibration and citation hardening.
+3. The phase-overlap coefficient is highly influential.
+4. The task-horizon / compute / algorithmic-efficiency relationship is difficult to decompose cleanly.
+5. Coding automation is still represented structurally rather than through a fully calibrated benchmark-to-time model.
+6. Monthly precision should not be mistaken for certainty. Month-level output is used because the model operates over month-indexed distributions, not because the exact month is known.
+7. The model has not yet been fully backtested against historical AI capability milestones.
+8. Passing software tests does not prove that the scientific assumptions are true.
+
+The safest interpretation is:
+
+> This is an auditable structural scaffold showing how a compute/METR-style short-timeline worldview propagates into AGI and ASI arrival distributions under explicit assumptions.
+
+---
+
+## 10. What changed in v0.5.0
+
+The v0.5.0 recalibration materially changed the forecast.
+
+Compared with the previous version:
+
+| Target        | Earlier version | v0.5.0 recalibrated |
+| ------------- | --------------: | ------------------: |
+| AGI           |      March 2032 |           July 2031 |
+| Internal ASI  |   December 2036 |            May 2034 |
+| Public ASI    |     August 2038 |       November 2035 |
+| AGI → ASI lag |      ~4.5 years |          ~2.6 years |
+| P(AGI > 2060) |           ~4.1% |               ~3.8% |
+
+The pull-forward is mainly caused by shorter cognitive lags for AI R&D automation, superhuman AI researcher capability, and takeoff, combined with a higher phase-overlap coefficient. Infrastructure friction increased, but the cognitive-lag compression dominated the physical-friction increase.
+
+This is a major model sensitivity and should be treated as an object of criticism rather than hidden.
+
+---
+
+## 11. Reproducibility
+
+The code is open-source and intended to be run locally. The model is designed so that critics can:
+
+* inspect the YAML assumptions
+* change parameter distributions
+* rerun the Monte Carlo engine
+* compare fast/base/slow scenarios
+* inspect forecast drivers
+* audit the equations
+* challenge the evidence tables
+* submit pull requests or critiques
+
+GitHub:
+https://github.com/MoheetBrain/ASI-Arrival-Calculator/pull/1
+
+The current v0.5.0 branch was committed as:
+
+```text
+commit: 01a4b4a
+branch: v0.5-empirical-recalibration
+tests: 33 passing
+```
+
+---
+
+## 12. Safe public claim
+
+The strongest honest claim is:
+
+> This repository presents an auditable structural Monte Carlo model for forecasting AGI and ASI arrival months. Under the current v0.5.0 recalibrated assumptions, the model’s median forecast is AGI in July 2031, internal capability-and-agency ASI in May 2034, and public ASI visibility/deployment in November 2035. These dates are conditional outputs of the model, not claims of certainty.
+
+Unsafe claim:
+
+> AGI will happen in July 2031 and ASI will happen in November 2035.
+
+That is not what the model proves.
+
+---
+
+## 13. Conclusion
+
+The “Exam Deadline” hypothesis argues that AI timeline forecasting should move from vague verbal estimates to auditable probabilistic models. This project implements that idea as a public structural Monte Carlo forecasting engine.
+
+The current model forecasts AGI in July 2031, internal ASI in May 2034, and public ASI in November 2035 under the v0.5.0 recalibrated assumptions. These outputs should be treated as conditional and criticisable. The project is designed to invite adversarial review, not to close the debate.
+
+The next scientific step is to harden the evidence tables, calibrate the most sensitive variables, and compare the model against external forecasts from Metaculus, AI Impacts, Epoch-style analyses, and other timeline models.
