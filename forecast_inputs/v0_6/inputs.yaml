@@ -1,0 +1,712 @@
+# =============================================================================
+# ASI Arrival Forecast — v0.6.0 inputs (recalibration as of 2026-10-06)
+# =============================================================================
+# This file drives the v0.6 engine (src/asi_forecast/v06/). The historical
+# v0.5.1 inputs remain untouched in forecast_inputs/base_forecast_inputs.yaml.
+#
+# Every sampled parameter carries: units, sources (source_ids that resolve to
+# evidence_tables/v0_6_evidence_2026.csv), evidence_class, interpretation,
+# rationale, correlation_group and last_updated. tests/test_v06_traceability.py
+# fails the build if any of these are missing or if a source_id is unknown.
+#
+# Distribution families (all sampled by inverse CDF so they can share a latent
+# "progress-speed" factor Z through a Gaussian copula):
+#   lognormal:   {median, p95}            sigma = ln(p95/median)/1.645
+#   logitnormal: {median, p95}            on (0,1), same construction in logit space
+#   triangular:  {low, mode, high}
+#   uniform:     {low, high}
+#   fixed:       {value}
+# Optional: clip: [low, high] (explicit audited bounds) and latent_loading in
+# [-1, 1]. Positive loading = the parameter is LARGER in "fast-progress" worlds.
+#
+# Evidence classes: EMPIRICAL_CAPABILITY_RESULT, EMPIRICAL_INFRASTRUCTURE_RESULT,
+# ACADEMIC_ANALYSIS, EXPERT_FORECAST, FRONTIER_LAB_LEADER_FORECAST,
+# STRATEGIC_MARKETING_STATEMENT, THEORETICAL_ARGUMENT, AUTHOR_PRIOR.
+# =============================================================================
+
+model_version: "0.6"
+
+simulation:
+  start_month: "2026-10"          # evidence cut-off: 2026-10-06
+  horizon_month: "2100-12"        # simulation stops here; later arrivals are censored at it
+  default_sims: 100000
+  random_seed: 20261006
+  convergence_batches: 10
+
+# -----------------------------------------------------------------------------
+# Definitions (operationalised; see forecast_inputs/agi_definition.yaml and
+# asi_definition.yaml for the prose definitions and the H0/H1/H2 test).
+# -----------------------------------------------------------------------------
+definitions:
+  agi: >
+    Reliable autonomous completion of expert-level work across a very wide range of
+    economically important cognitive tasks. Operational gate: the METR-style 50%
+    task horizon on software/ML/research tasks reaches agi_threshold_hours AND the
+    weakest broad domains (non-verifiable, messy, perception-heavy) close a further
+    generality_gap_doublings of horizon.
+  internal_asi: >
+    A system (or coordinated agent system) that substantially outperforms the best
+    human teams across most strategically important cognitive domains (AI R&D, SWE,
+    mathematics, science, cyber, strategy, long-horizon work). Operational gate:
+    effective capability >= asi_gap_oom orders of magnitude of effective compute
+    beyond AGI, realised in a trained successor and demonstrated across domains.
+  public_asi: >
+    Internal ASI capability that is externally deployed, accessible, economically
+    active or publicly observable.
+
+# -----------------------------------------------------------------------------
+# Hypothesis test: is operational AGI already here? (H0 / H1 / H2)
+# -----------------------------------------------------------------------------
+agi_status:
+  p_already_agi:
+    dist: fixed
+    value: 0.10
+    units: probability
+    sources: [OAI_RESEARCH_ACCEL_2026_09, OAI_ASTRA_SC_2026_09, ANTH_MYTHOS51_SC_2026_09, ANTH_MYTHOS5_SC_2026_06, METR_MYTHOS5_REVIEW_2026_06, BROCKMAN_AGI_ERA_2026_09, HUANG_AGI_2026_09, AMODEI_DWARKESH_2026_02]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "P(H2): the repository's operational AGI definition is already satisfied by a system existing on 2026-10-06."
+    rationale: >
+      H2 fails on the definition's 'reliable/automate' and 'very wide range' clauses:
+      >50% of successful 4-8h agent tasks at OpenAI still need human intervention;
+      Anthropic and METR both judge the frontier model 'not close to substituting'
+      for research scientists and 'likely unable to fully and reliably automate R&D
+      for projects spanning multiple weeks'; OpenAI's own model is below its 'High'
+      AI-self-improvement threshold. Evidence for H2 is real but narrower (superhuman
+      bounded optimisation, OSWorld 85%, cyber 'Critical', a few open maths problems)
+      plus insider claims (Brockman, Huang) that are commercially conflicted. Residual
+      10% covers definitional slack ('approximately expert-level').
+    correlation_group: agi_status_judgement
+    last_updated: "2026-10-06"
+
+# -----------------------------------------------------------------------------
+# AGI stage: horizon-trend gate
+# -----------------------------------------------------------------------------
+agi_stage:
+  current_horizon_hours:
+    dist: lognormal
+    median: 32
+    p95: 110
+    clip: [8, 400]
+    latent_loading: 0.3
+    units: human-expert hours (50% success, METR TH1.1-style SWE/ML/cyber suite) at 2026-10
+    sources: [METR_MYTHOS_TH_2026_05, METR_TH11_2026_01, ANTH_RSI_2026_06, ANTH_MYTHOS5_SC_2026_06]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT]
+    interpretation: "Frontier 50% autonomous task horizon on today's date."
+    rationale: >
+      METR measured early Mythos Preview (Mar 2026) at >=16h (95% CI 8.5-55h) and says
+      >16h is unreliable on its suite; Anthropic reports Opus 4.6 at ~12h (Feb 2026);
+      Mythos 5 (Jun) and Mythos 5.1/GPT-6 Astra (Sep) are described as on-trend.
+      Rolling 16h forward ~6 months at a ~4-5 month doubling gives ~35-45h; centred
+      lower (32h) because the >16h numbers are lower bounds of an unreliable range
+      and METR flagged saturation. Wide p95 reflects that no robust post-May number exists.
+    correlation_group: latent_capability_trend
+    last_updated: "2026-10-06"
+
+  doubling_months:
+    dist: lognormal
+    median: 4.5
+    p95: 8.0
+    clip: [2.5, 14]
+    latent_loading: -0.5
+    units: months per doubling of the 50% horizon at 2026-10 compute growth
+    sources: [METR_TH11_2026_01, ANTH_RSI_2026_06, AIF_Q1_2026_04, METR_TH_LIMITS_2026_01]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, EXPERT_FORECAST]
+    interpretation: "Current doubling time of the reliable task horizon."
+    rationale: >
+      TH1.1: 89 days (2.9 mo) since 2024, 131 days (4.3 mo) since 2023, 196 days
+      (6.4 mo) long-run. Anthropic reports ~4 months. AI Futures (Apr 2026) use 4-4.5.
+      v0.5.1 used 7 months (the long-run rate) and was too slow (see backtest).
+      Median 4.5 deliberately sits above the 2024+ fit because long tasks lack human
+      baselines and METR warns of saturation.
+    correlation_group: latent_capability_trend
+    last_updated: "2026-10-06"
+
+  per_doubling_ratio:
+    dist: triangular
+    low: 0.85
+    mode: 0.96
+    high: 1.08
+    latent_loading: -0.4
+    units: ratio of each doubling's duration to the previous one (<1 = superexponential)
+    sources: [AIF_MODEL_2025_12, METR_TH_LIMITS_2026_01, ANTH_MYTHOS5_SC_2026_06, EPOCH_ACCEL_2026_04]
+    evidence_class: [EXPERT_FORECAST, EMPIRICAL_CAPABILITY_RESULT, THEORETICAL_ARGUMENT]
+    interpretation: "Pre-AGI AI-R&D feedback and the 'infinite horizon at AGI' argument shorten successive doublings."
+    rationale: >
+      AI Futures' median parameters imply mildly superexponential horizon growth;
+      METR's Kwa notes the AGI-implies-infinite-horizon argument. Against: Anthropic
+      finds Mythos 5 is a level shift with no further slope acceleration ('inconsistent
+      with compounding acceleration'); Epoch finds the 2024 acceleration is a one-off
+      reasoning-model break. Mode 0.96 = mild; high 1.08 allows sub-exponential.
+    correlation_group: ai_rnd_feedback_internal
+    last_updated: "2026-10-06"
+
+  agi_threshold_hours:
+    dist: lognormal
+    median: 1000
+    p95: 8000
+    clip: [100, 60000]
+    latent_loading: 0.0
+    units: 50% task horizon (human-expert hours) at which the SWE/ML gate is met
+    sources: [METR_TH_LIMITS_2026_01, AIF_Q1_2026_04, METR_MYTHOS5_REVIEW_2026_06]
+    evidence_class: [THEORETICAL_ARGUMENT, EXPERT_FORECAST, AUTHOR_PRIOR]
+    interpretation: "Definitional threshold: horizon needed for reliable autonomous expert work."
+    rationale: >
+      80% horizons run ~5x below 50% horizons (Mythos: 16h vs 3.1h). 'Reliable'
+      month-long expert projects (80% horizon ~167h, METR's headline month) => 50%
+      horizon ~800-1000h. AI Futures' Automated Coder uses an 80% horizon of ~1 work
+      year (=> ~10,000h at 50%), the upper tail. Lower tail (~100h) covers readings of
+      the definition under which current systems are close.
+    correlation_group: agi_definition
+    last_updated: "2026-10-06"
+
+  generality_gap_doublings:
+    dist: lognormal
+    median: 1.5
+    p95: 5.0
+    clip: [0.0, 12]
+    latent_loading: -0.2
+    units: extra horizon doublings needed for the weakest broad domains to catch up
+    sources: [METR_TH_LIMITS_2026_01, PRINCETON_SHADOW_2026_08, ANTH_RSI_2026_06, AMODEI_DWARKESH_2026_02]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, ACADEMIC_ANALYSIS]
+    interpretation: "Lag of non-verifiable, open-ended and perception-heavy work behind SWE horizons."
+    rationale: >
+      METR (Jan 2026): visual computer-use horizons were 40-100x (5-7 doublings) below
+      SWE, now largely closed (OSWorld-Verified 85%). Open-ended research judgement still
+      lags (Princeton shadow evaluation: agent papers rejected; Anthropic: 'large
+      performance gaps persist' in choosing goals). Expressed in doublings so the lag
+      scales with the actual pace of progress instead of being a fixed calendar delay.
+    correlation_group: agi_definition
+    last_updated: "2026-10-06"
+
+  paradigm_wall_probability:
+    dist: fixed
+    value: 0.10
+    units: probability
+    sources: [SUTSKEVER_DWARKESH_2025_11, ANTH_RSI_2026_06, PRINCETON_SHADOW_2026_08, EPOCH_SCALE_DEP_2026_02]
+    evidence_class: [FRONTIER_LAB_LEADER_FORECAST, ACADEMIC_ANALYSIS, AUTHOR_PRIOR]
+    interpretation: "P(current paradigm saturates below the AGI gate; a new paradigm is required)."
+    rationale: >
+      Sutskever: current approaches 'will go some distance and then peter out'; human-
+      like learner in '5 to 20' years. Anthropic lists this S-curve scenario but says
+      'we have not yet seen that curve bend'. Replaces v0.5.1's unexplained 15%
+      teleport-to-2040 tail with a causal branch.
+    correlation_group: paradigm_limits
+    last_updated: "2026-10-06"
+
+  paradigm_wall_wait_years:
+    dist: lognormal
+    median: 10
+    p95: 25
+    clip: [3, 74]
+    latent_loading: 0.0
+    units: years from 2026-10 until a successor paradigm reaches the AGI gate
+    sources: [SUTSKEVER_DWARKESH_2025_11, ESPAI_2023]
+    evidence_class: [FRONTIER_LAB_LEADER_FORECAST, EXPERT_FORECAST]
+    interpretation: "Waiting time in paradigm-wall worlds."
+    rationale: "Sutskever's 5-20 years (from Nov 2025); ESPAI 2023 HLMI median 2047 as a slow anchor."
+    correlation_group: paradigm_limits
+    last_updated: "2026-10-06"
+
+  pre_agi_pause_probability:
+    dist: fixed
+    value: 0.15
+    units: probability
+    sources: [OAI_RESEARCH_ACCEL_2026_09, OAI_HF_INCIDENT_2026_07, EO14409_2026_06]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "P(a material, frontier-wide development pause before AGI)."
+    rationale: >
+      OpenAI paused RL on deployment-bound models for ~2 weeks after agents compromised
+      Hugging Face (Jul 2026) and says it will slow or stop when safeguards are
+      insufficient. US policy (EO 14409) is explicitly voluntary and forbids licensing.
+      Pauses so far are short and lab-local.
+    correlation_group: governance
+    last_updated: "2026-10-06"
+
+  pre_agi_pause_months:
+    dist: lognormal
+    median: 2
+    p95: 8
+    clip: [0.25, 36]
+    latent_loading: 0.0
+    units: months
+    sources: [OAI_RESEARCH_ACCEL_2026_09]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "Effective frontier-wide delay if a pre-AGI pause happens."
+    rationale: "Observed lab pause ~2 weeks with partial compute substitution (85% offset); frontier-wide pauses would be longer."
+    correlation_group: governance
+    last_updated: "2026-10-06"
+
+# -----------------------------------------------------------------------------
+# Compute and algorithmic progress (shared by both stages; calendar-time driven)
+# -----------------------------------------------------------------------------
+progress_inputs:
+  compute_growth_oom_per_year:
+    dist: lognormal
+    median: 0.62
+    p95: 0.78
+    clip: [0.40, 0.90]
+    latent_loading: 0.4
+    units: OOM/year of frontier training+experiment compute (0.62 = 4.2x/yr)
+    sources: [EPOCH_TRENDS_2026, EPOCH_LAB_COMPUTE_2026_05, EPOCH_DC_COMPUTE_2026_06]
+    evidence_class: [EMPIRICAL_INFRASTRUCTURE_RESULT]
+    interpretation: "Available-compute growth before the slowdown date."
+    rationale: >
+      Epoch: frontier training compute 5x/yr since 2020 (90% CI 4-6x); OpenAI ~4x/yr
+      compute in 2025; global installed AI compute ~3x/yr; largest-site compute record
+      doubling every 7 months. v0.5.1's 3.8x was slightly low.
+    correlation_group: compute_supply
+    last_updated: "2026-10-06"
+
+  compute_slowdown_year:
+    dist: uniform
+    low: 2028.0
+    high: 2031.0
+    latent_loading: 0.3
+    units: decimal calendar year
+    sources: [EPOCH_LAB_COMPUTE_2026_05, EPOCH_DC_POWER_2026]
+    evidence_class: [EMPIRICAL_INFRASTRUCTURE_RESULT, ACADEMIC_ANALYSIS]
+    interpretation: "When frontier compute growth converges to industry-wide/capex-limited growth."
+    rationale: >
+      Epoch: top labs could absorb their compute headroom within ~2.5-5 years; AI capex
+      ~$1T/yr in 2026; three record-setting data centres projected for 2028 come in at
+      ~half the power trend (piecewise fit 1.5x/yr after the break).
+    correlation_group: compute_supply
+    last_updated: "2026-10-06"
+
+  compute_late_multiplier:
+    dist: triangular
+    low: 0.35
+    mode: 0.65
+    high: 1.0
+    latent_loading: 0.3
+    units: fraction of pre-slowdown compute growth rate (OOM/yr) retained after the slowdown
+    sources: [EPOCH_LAB_COMPUTE_2026_05, EPOCH_DC_POWER_2026]
+    evidence_class: [EMPIRICAL_INFRASTRUCTURE_RESULT, ACADEMIC_ANALYSIS]
+    interpretation: "Size of the physical/capex slowdown (power, fabs, HBM, packaging, capex)."
+    rationale: >
+      Maintaining 4x/yr after headroom is exhausted needs capex to more than double
+      annually; hyperscaler capex grows ~70%/yr => ~2-3x/yr compute => 0.5-0.7 of the
+      OOM rate. 1.0 allows AI-driven revenue to finance the trend.
+    correlation_group: compute_supply
+    last_updated: "2026-10-06"
+
+  software_progress_oom_per_year:
+    dist: lognormal
+    median: 0.50
+    p95: 0.85
+    clip: [0.20, 1.20]
+    latent_loading: 0.3
+    units: OOM/year of effective-compute-equivalent algorithmic progress at human-driven R&D intensity
+    sources: [EPOCH_ALGO_2024, EPOCH_SCALE_DEP_2026_02, EPOCH_REASONING_CEG_2025_08]
+    evidence_class: [ACADEMIC_ANALYSIS]
+    interpretation: "Baseline software (algorithmic efficiency) progress, eta(t), before AI-driven acceleration."
+    rationale: >
+      Epoch: compute for fixed LM performance halves every ~8 months (95% CI 5-14) =>
+      0.45 OOM/yr (0.26-0.72); reasoning training added a one-off ~10x CEG; Epoch (Feb
+      2026) notes much measured efficiency may be scale-dependent (2.23x/yr = 0.35),
+      which is the low tail.
+    correlation_group: algorithmic_progress
+    last_updated: "2026-10-06"
+
+# -----------------------------------------------------------------------------
+# AI-R&D automation: today's level (decomposition) — informs regime evidence and
+# is reported; the post-AGI automation fraction is a regime parameter below.
+# -----------------------------------------------------------------------------
+rnd_automation_today:
+  description: >
+    A_R&D(2026-10) = sum_i w_i * a_i, where w_i is the share of frontier AI R&D labour
+    time in component i and a_i the fraction of that component AI can do WITH light
+    supervision; the autonomy discount converts this to fully autonomous work.
+  autonomy_discount:
+    dist: triangular
+    low: 0.45
+    mode: 0.6
+    high: 0.75
+    units: fraction of supervised-automatable work that completes without human intervention
+    sources: [OAI_RESEARCH_ACCEL_2026_09, ANTH_RSI_2026_06]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT]
+    interpretation: "Converts 'can do with steering' into 'does autonomously'."
+    rationale: ">50% of successful 4-8h tasks at OpenAI needed >=1 intervention; Anthropic open-ended task success 76% (May 2026)."
+    correlation_group: ai_rnd_feedback_internal
+    last_updated: "2026-10-06"
+  components:
+    # name: [weight (share of R&D labour), low, mode, high of supervised automation]
+    research_idea_generation:   [0.08, 0.05, 0.15, 0.30]
+    literature_analysis:        [0.04, 0.50, 0.70, 0.85]
+    coding_implementation:      [0.22, 0.70, 0.80, 0.90]
+    experiment_running_monitoring: [0.12, 0.40, 0.60, 0.75]
+    training_infrastructure_ops: [0.10, 0.35, 0.50, 0.65]
+    evaluation_benchmark_construction: [0.07, 0.45, 0.60, 0.75]
+    debugging:                  [0.10, 0.45, 0.60, 0.78]
+    hyperparameter_optimisation: [0.04, 0.65, 0.80, 0.90]
+    kernel_compiler_optimisation: [0.04, 0.65, 0.80, 0.92]
+    data_generation:            [0.05, 0.45, 0.60, 0.75]
+    architecture_design:        [0.03, 0.05, 0.20, 0.35]
+    interpretability:           [0.03, 0.25, 0.40, 0.55]
+    result_interpretation:      [0.04, 0.20, 0.35, 0.50]
+    research_planning_prioritisation: [0.04, 0.02, 0.10, 0.20]
+  component_sources: [OAI_RESEARCH_ACCEL_2026_09, ANTH_RSI_2026_06, OAI_ASTRA_SC_2026_09, ANTH_MYTHOS5_SC_2026_06, PRINCETON_SHADOW_2026_08, EPOCH_RND_TAXONOMY_2026]
+  component_rationale: >
+    Weights follow Epoch's AI-R&D taxonomy (Decide/Design/Build/Run/Analyze/Communicate)
+    as used by OpenAI (Sep 2026): Build dominates agent tokens, 'high-level planning
+    remains a minimal fraction'. Automation levels: >80% of merged code Claude-authored
+    (May 2026); superhuman on bounded optimisation (LLM-training speedup 52-70x vs 4x
+    human 4-8h); Astra 78% on internal research debugging (below 'High'); open-ended
+    research judgement weak (Princeton shadow eval; Anthropic next-step choice 64% vs a
+    selected human baseline).
+
+# -----------------------------------------------------------------------------
+# AGI -> ASI takeoff dynamics (regime mixture over a semi-endogenous feedback model)
+# -----------------------------------------------------------------------------
+takeoff:
+  # Shared physical / definitional parameters ---------------------------------
+  asi_gap_oom:
+    dist: lognormal
+    median: 3.0
+    p95: 7.0
+    clip: [1.0, 12]
+    latent_loading: 0.0
+    units: OOM of effective compute between AGI and internal ASI
+    sources: [FORETHOUGHT_SIE_2025_08, AIF_MODEL_2025_12, EPOCH_TRENDS_2026]
+    evidence_class: [THEORETICAL_ARGUMENT, AUTHOR_PRIOR]
+    interpretation: "Distance from 'approximately expert-level' to 'substantially beyond the best human teams'."
+    rationale: >
+      GPT-4 (2023) -> Mythos 5 (2026) was ~3.5-4 OOM of effective compute and moved
+      systems from 'smart college student' to 'beginning PhD/professional, superhuman
+      on bounded tasks'. Forethought: ~3 OOM beyond top-expert AI researchers yields
+      'significantly superhuman in many broad domains'; 6 OOM ~ a top-vs-median gap 3x
+      larger. AGI here is below top-expert research taste, so median 3 OOM with a long
+      right tail. NOT directly measurable: flagged as a dominant judgement input.
+    correlation_group: asi_definition
+    last_updated: "2026-10-06"
+
+  effective_limit_oom:
+    dist: uniform
+    low: 6
+    high: 16
+    latent_loading: 0.0
+    units: OOM of software improvement beyond AGI before effective limits
+    sources: [FORETHOUGHT_SIE_2025_08]
+    evidence_class: [ACADEMIC_ANALYSIS]
+    interpretation: "Returns to software R&D decline linearly to ~0 as software approaches limits."
+    rationale: "Forethought: 6-16 OOM of efficiency gains after AI-research automation before effective limits."
+    correlation_group: software_returns
+    last_updated: "2026-10-06"
+
+  infra_response_delay_months:
+    dist: fixed
+    value: 24
+    units: months
+    sources: [EPOCH_TRENDS_2026, EPOCH_DC_POWER_2026]
+    evidence_class: [EMPIRICAL_INFRASTRUCTURE_RESULT]
+    interpretation: "Minimum time before post-AGI intelligence can raise physical compute growth."
+    rationale: "Gigawatt-scale data centres take ~2.1 years to build (90% CI 1-3.6). Compute already under construction at AGI follows the calendar path."
+    correlation_group: compute_supply
+    last_updated: "2026-10-06"
+
+  training_cycle_lag_months:
+    dist: lognormal
+    median: 2.5
+    p95: 6
+    clip: [0.5, 12]
+    latent_loading: -0.4
+    units: months to realise reached capability in a trained, evaluated successor
+    sources: [EPOCH_DC_POWER_2026, FORETHOUGHT_SIE_2025_08]
+    evidence_class: [EMPIRICAL_INFRASTRUCTURE_RESULT, ACADEMIC_ANALYSIS]
+    interpretation: "Discrete successor-training granularity (weakly intelligence-responsive)."
+    rationale: "Frontier runs exceed ~100 days (Epoch); Forethought argues runs can be shortened by spending efficiency gains on speed."
+    correlation_group: training_latency
+    last_updated: "2026-10-06"
+
+  demonstration_lag_months:
+    dist: lognormal
+    median: 1.5
+    p95: 6
+    clip: [0.0, 24]
+    latent_loading: 0.0
+    units: months
+    sources: [EPOCH_FME_2026_09, ANTH_MYTHOS5_SC_2026_06]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "Time to establish multidomain superiority (science/maths/cyber) once capability exists."
+    rationale: "Evaluation itself is a bottleneck: METR could not upper-bound Mythos 5; maths results require formal verification; some science needs wet-lab latency."
+    correlation_group: evaluation_latency
+    last_updated: "2026-10-06"
+
+  post_agi_pause_probability:
+    dist: fixed
+    value: 0.35
+    units: probability
+    sources: [OAI_RESEARCH_ACCEL_2026_09, OAI_HF_INCIDENT_2026_07, ANTH_MYTHOS_PREVIEW_SC_2026_04, EO14409_2026_06]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "P(a material frontier-wide slowdown/pause during the AGI->ASI transition)."
+    rationale: >
+      OpenAI: 'We do not yet know how to safely get all the way to aligned, full RSI'
+      and will slow or stop if needed; incidents (Hugging Face intrusion; decreasing
+      CoT monitorability; covert sandbagging capability) make post-AGI pauses more
+      likely than pre-AGI ones. No mandatory regime exists (EO 14409 voluntary).
+    correlation_group: governance
+    last_updated: "2026-10-06"
+
+  post_agi_pause_months:
+    dist: lognormal
+    median: 4
+    p95: 18
+    clip: [0.25, 60]
+    latent_loading: 0.0
+    units: months
+    sources: [OAI_RESEARCH_ACCEL_2026_09, AIF_Q25_2026_08]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "Delay to internal ASI if a post-AGI pause happens."
+    rationale: "Observed lab pauses are weeks; a coordinated or government-mandated slowdown could be a year or more."
+    correlation_group: governance
+    last_updated: "2026-10-06"
+
+  # Regime mixture ------------------------------------------------------------
+  regimes: [bottlenecked, moderate, fast, recursive]
+  regime_latent_loading: 0.3
+  regime_prior:
+    weights: {bottlenecked: 0.30, moderate: 0.35, fast: 0.25, recursive: 0.10}
+    sources: [FORETHOUGHT_SIE_2025_08, FORETHOUGHT_IE_ACCEL_2025, AIF_MODEL_2025_12, FORETHOUGHT_COMPUTE_BN_2025_04, EPOCH_SCALE_DEP_2026_02]
+    evidence_class: [ACADEMIC_ANALYSIS, EXPERT_FORECAST, AUTHOR_PRIOR]
+    rationale: >
+      Pre-2026 literature: Forethought ~50% that the software loop alone accelerates
+      (r>1), ~60% that >3 years of progress compresses into <1 year; AI Futures (Dec
+      2025) 26-30% AGI-coder->ASI in <1 year; Epoch's CES compute-bottleneck view caps
+      software speed-up near ~6x. Prior splits mass to reflect that disagreement.
+    last_updated: "2026-10-06"
+  # 2026 evidence. Log-likelihood ratios are AVERAGED within a correlation group and
+  # SUMMED across groups, so correlated observations are not double counted.
+  regime_evidence:
+    - id: no_ai_attributable_slope_change
+      correlation_group: lab_internal_rnd_measurement
+      likelihood: {bottlenecked: 1.20, moderate: 1.10, fast: 0.85, recursive: 0.70}
+      sources: [ANTH_MYTHOS5_SC_2026_06, ANTH_MYTHOS51_SC_2026_09, METR_MYTHOS5_REVIEW_2026_06]
+      note: "Mythos 5 sits above trend by the same margin as Mythos Preview - a level shift, 'inconsistent with compounding acceleration'; no sustained AI-attributable 2x speed-up."
+    - id: engineering_automated_judgement_lagging
+      correlation_group: lab_internal_rnd_measurement
+      likelihood: {bottlenecked: 1.15, moderate: 1.15, fast: 0.85, recursive: 0.75}
+      sources: [ANTH_RSI_2026_06, OAI_RESEARCH_ACCEL_2026_09, PRINCETON_SHADOW_2026_08]
+      note: "Acceleration 'concentrated in engineering execution rather than research judgment'; Amdahl bottleneck on taste; autonomous papers rejected."
+    - id: rapid_gains_on_bounded_rnd_tasks
+      correlation_group: lab_internal_rnd_measurement
+      likelihood: {bottlenecked: 0.80, moderate: 0.95, fast: 1.15, recursive: 1.25}
+      sources: [ANTH_RSI_2026_06, ANTH_MYTHOS5_SC_2026_06, OAI_ASTRA_SC_2026_09, OAI_RESEARCH_ACCEL_2026_09]
+      note: "LLM-training speed-up 3x -> 52-70x in a year; autonomous weak-to-strong study 97% vs 23% human; 3.1 agent-workdays per human workday at OpenAI."
+    - id: compute_headroom_tightening
+      correlation_group: infrastructure
+      likelihood: {bottlenecked: 1.15, moderate: 1.05, fast: 0.95, recursive: 0.90}
+      sources: [EPOCH_LAB_COMPUTE_2026_05, EPOCH_DC_POWER_2026]
+      note: "~$1T/yr capex, GPU-hour prices up ~30%, 2028 sites at ~half the power trend."
+    - id: scale_dependent_algorithmic_progress
+      correlation_group: academic_analysis
+      likelihood: {bottlenecked: 1.10, moderate: 1.05, fast: 0.95, recursive: 0.85}
+      sources: [EPOCH_SCALE_DEP_2026_02]
+      note: "If efficiency gains depend on scaling training compute, automating research labour yields less."
+  # Regime-specific mechanism parameters. Times are NOT specified anywhere: lags
+  # emerge from simulating the feedback dynamics with these parameters.
+  regime_parameters:
+    automation_fraction_at_agi:
+      units: fraction of AI-R&D labour (incl. research taste) AI performs autonomously at AGI
+      sources: [OAI_RESEARCH_ACCEL_2026_09, ANTH_RSI_2026_06, ANTH_MYTHOS51_SC_2026_09]
+      evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+      interpretation: "A_R&D at the AGI date (today's decomposition gives ~0.35 autonomous, ~0.57 supervised)."
+      rationale: >
+        AGI by definition exceeds today's level; the regimes differ in how much research
+        taste is automated by then. Definitional-consistency constraint: the recursive
+        regime ('AI improves the machinery that improves AI') must leave only a small
+        human-only residual at AGI, otherwise Amdahl's law makes it non-recursive;
+        tests/test_v06_engine.py checks that >=75% of recursive draws are superlinear.
+      correlation_group: ai_rnd_feedback_internal
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: logitnormal, median: 0.65, p95: 0.80}
+        moderate:     {dist: logitnormal, median: 0.80, p95: 0.90}
+        fast:         {dist: logitnormal, median: 0.90, p95: 0.96}
+        recursive:    {dist: logitnormal, median: 0.96, p95: 0.99}
+    taste_automation_per_oom:
+      units: logit(automation fraction) gained per OOM of effective capability
+      sources: [ANTH_RSI_2026_06, PRINCETON_SHADOW_2026_08, AIF_Q25_2026_08]
+      evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+      interpretation: "How fast the residual (judgement/taste) tasks are automated as capability rises."
+      rationale: "Anthropic next-step research choice 51% -> 64% over ~5 months (~+0.5 logit per ~0.4 OOM) on a selected, narrow metric; open-ended research still fails (Princeton)."
+      correlation_group: ai_rnd_feedback_internal
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: lognormal, median: 0.15, p95: 0.5}
+        moderate:     {dist: lognormal, median: 0.5, p95: 1.2}
+        fast:         {dist: lognormal, median: 1.0, p95: 2.0}
+        recursive:    {dist: lognormal, median: 2.5, p95: 4.0}
+    parallel_labour_returns:
+      units: elasticity of software progress to AI-R&D research input (p, 'stepping on toes')
+      sources: [FORETHOUGHT_SIE_2025_08]
+      evidence_class: [ACADEMIC_ANALYSIS]
+      interpretation: "Doubling research input multiplies software progress by 2^p."
+      rationale: "Forethought: p median 0.3 (0.15-0.6)."
+      correlation_group: software_returns
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: lognormal, median: 0.20, p95: 0.35, clip: [0.05, 1.0]}
+        moderate:     {dist: lognormal, median: 0.30, p95: 0.50, clip: [0.05, 1.0]}
+        fast:         {dist: lognormal, median: 0.40, p95: 0.60, clip: [0.05, 1.0]}
+        recursive:    {dist: lognormal, median: 0.50, p95: 0.75, clip: [0.05, 1.0]}
+    returns_to_software_rd:
+      units: r (software doublings per doubling of cumulative research input); r>1 => accelerating
+      sources: [FORETHOUGHT_SIE_2025_08, FORETHOUGHT_IE_ACCEL_2025]
+      evidence_class: [ACADEMIC_ANALYSIS]
+      interpretation: "Diminishing returns to software R&D ('ideas get harder')."
+      rationale: "Forethought: r median 1.2 (0.4-3.6); Eth & Davidson 0.5-2 after compute bottlenecks; ImageNet r~1.4."
+      correlation_group: software_returns
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: lognormal, median: 0.6, p95: 1.0, clip: [0.2, 6]}
+        moderate:     {dist: lognormal, median: 1.0, p95: 1.6, clip: [0.2, 6]}
+        fast:         {dist: lognormal, median: 1.5, p95: 2.5, clip: [0.2, 6]}
+        recursive:    {dist: lognormal, median: 2.4, p95: 3.6, clip: [0.2, 6]}
+    compute_bottleneck_cap:
+      units: maximum speed-up of the software PROGRESS RATE achievable at fixed experiment compute (x)
+      sources: [FORETHOUGHT_COMPUTE_BN_2025_04, EPOCH_SCALE_DEP_2026_02]
+      evidence_class: [ACADEMIC_ANALYSIS]
+      interpretation: "CES compute complementarity: infinite AI labour cannot speed software progress beyond this."
+      rationale: "Epoch's rho=-0.4 implies a ~6x maximum progress speed-up; Forethought argues rho in (-0.2,0), i.e. 32x to unbounded; economy-wide rho estimates span 2x-100x. Bottlenecked/moderate regimes sit at or below Epoch's value, fast/recursive at Forethought's."
+      correlation_group: software_returns
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: lognormal, median: 3, p95: 6, clip: [1.2, 1000]}
+        moderate:     {dist: lognormal, median: 8, p95: 20, clip: [1.2, 1000]}
+        fast:         {dist: lognormal, median: 30, p95: 100, clip: [1.2, 1000]}
+        recursive:    {dist: lognormal, median: 100, p95: 400, clip: [1.2, 1000]}
+    experiment_efficiency_coupling:
+      units: fraction of each OOM of capability gain that also raises the compute-bottleneck cap
+      sources: [FORETHOUGHT_COMPUTE_BN_2025_04]
+      evidence_class: [THEORETICAL_ARGUMENT]
+      interpretation: "Better software makes experiments cheaper, relaxing the compute bottleneck."
+      rationale: "Forethought point 5: 'when your AI algorithms become twice as efficient, you can run twice as many experiments'; Epoch counters that frontier-scale experiments do not shrink."
+      correlation_group: software_returns
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: triangular, low: 0.0, mode: 0.1, high: 0.3}
+        moderate:     {dist: triangular, low: 0.1, mode: 0.3, high: 0.5}
+        fast:         {dist: triangular, low: 0.3, mode: 0.5, high: 0.8}
+        recursive:    {dist: triangular, low: 0.5, mode: 0.8, high: 1.0}
+    ai_labour_advantage:
+      units: AI research labour on automated tasks relative to the human labour it replaces (x), at AGI
+      sources: [OAI_RESEARCH_ACCEL_2026_09, FORETHOUGHT_SIE_2025_08]
+      evidence_class: [EMPIRICAL_CAPABILITY_RESULT, ACADEMIC_ANALYSIS]
+      interpretation: "Copies x speed of AI researchers; grows 10x per OOM of software (runtime efficiency)."
+      rationale: "OpenAI research org already runs 3.1 agent-workdays per human workday (Aug 2026); Forethought's ASARA scenario: ~30,000 copies at 30x human speed."
+      correlation_group: inference_compute
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: lognormal, median: 5, p95: 15, clip: [1.5, 10000]}
+        moderate:     {dist: lognormal, median: 20, p95: 60, clip: [1.5, 10000]}
+        fast:         {dist: lognormal, median: 50, p95: 200, clip: [1.5, 10000]}
+        recursive:    {dist: lognormal, median: 200, p95: 1000, clip: [1.5, 10000]}
+    hardware_feedback_boost:
+      units: fractional increase in compute growth rate once infra_response_delay has elapsed
+      sources: [FORETHOUGHT_IE_ACCEL_2025, EPOCH_DC_POWER_2026]
+      evidence_class: [ACADEMIC_ANALYSIS, THEORETICAL_ARGUMENT]
+      interpretation: "Partially intelligence-responsive physical bottlenecks (chip design, fabs, power) with a build lag."
+      rationale: "Forethought: chip-technology feedback likely r>1 (~65%); bounded by ~2-year physical build times."
+      correlation_group: compute_supply
+      last_updated: "2026-10-06"
+      latent_loading: 0.3
+      by_regime:
+        bottlenecked: {dist: triangular, low: 0.0, mode: 0.0, high: 0.1}
+        moderate:     {dist: triangular, low: 0.0, mode: 0.1, high: 0.3}
+        fast:         {dist: triangular, low: 0.1, mode: 0.3, high: 0.6}
+        recursive:    {dist: triangular, low: 0.3, mode: 0.6, high: 1.0}
+
+# -----------------------------------------------------------------------------
+# Internal -> public
+# -----------------------------------------------------------------------------
+deployment:
+  secrecy_probability:
+    dist: fixed
+    value: 0.25
+    units: probability
+    sources: [EO14409_2026_06, ANTH_MYTHOS51_SC_2026_09, OAI_ASTRA_SC_2026_09]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT, AUTHOR_PRIOR]
+    interpretation: "P(internal ASI is withheld/classified rather than released through the normal staged process)."
+    rationale: "Mythos-class models already restricted to vetted partners for months; EO 14409 lets the state pick trusted partners; NSPM-11 prioritises national-security use."
+    correlation_group: governance
+    last_updated: "2026-10-06"
+  normal_delay_months:
+    dist: lognormal
+    median: 4
+    p95: 12
+    clip: [0.5, 48]
+    latent_loading: -0.2
+    units: months from internal ASI to public availability/observability
+    sources: [ANTH_MYTHOS_PREVIEW_SC_2026_04, ANTH_MYTHOS5_SC_2026_06, OAI_ASTRA_SC_2026_09, EO14409_2026_06]
+    evidence_class: [EMPIRICAL_CAPABILITY_RESULT]
+    interpretation: "Staged release: government window, trusted partners, safeguarded public variant."
+    rationale: "Mythos Preview: internal 24 Feb -> partners 7 Apr -> safeguarded public (Fable 5) 9 Jun 2026 (~3.5 months). GPT-6 Astra: internal Aug -> limited preview 3 Sep. EO 14409 voluntary 30-day federal window."
+    correlation_group: governance
+    last_updated: "2026-10-06"
+  secrecy_delay_months:
+    dist: lognormal
+    median: 18
+    p95: 60
+    clip: [3, 240]
+    latent_loading: 0.0
+    units: months
+    sources: [EO14409_2026_06]
+    evidence_class: [AUTHOR_PRIOR]
+    interpretation: "Delay when ASI is held for national-security reasons."
+    rationale: "No precedent; wide judgement distribution."
+    correlation_group: governance
+    last_updated: "2026-10-06"
+
+# -----------------------------------------------------------------------------
+# Scenarios (deep-merged over the baseline). Run with --scenario <name>.
+# -----------------------------------------------------------------------------
+scenarios:
+  baseline:
+    description: "A — evidence-weighted posterior (regime weights from the Bayesian update)."
+  agi_era_fast:
+    description: >
+      B — conditional on current systems being near AGI, high AI-R&D automation,
+      strong successor feedback and infrastructure keeping pace.
+    overrides:
+      agi_status: {p_already_agi: {value: 0.35}}
+      agi_stage:
+        current_horizon_hours: {median: 45}
+        doubling_months: {median: 3.5, p95: 5.5}
+        per_doubling_ratio: {low: 0.82, mode: 0.92, high: 1.0}
+        agi_threshold_hours: {median: 500, p95: 3000}
+        paradigm_wall_probability: {value: 0.03}
+      progress_inputs:
+        compute_slowdown_year: {low: 2030.0, high: 2033.0}
+        compute_late_multiplier: {low: 0.75, mode: 0.9, high: 1.0}
+      takeoff:
+        post_agi_pause_probability: {value: 0.2}
+        regime_weights_override: {bottlenecked: 0.0, moderate: 0.2, fast: 0.5, recursive: 0.3}
+  bottlenecked:
+    description: >
+      C — conditional on weak autonomous research, reliability failures, diminishing
+      returns, hardware/energy constraints and governance/deployment delays.
+    overrides:
+      agi_status: {p_already_agi: {value: 0.0}}
+      agi_stage:
+        current_horizon_hours: {median: 24}
+        doubling_months: {median: 6.5, p95: 11}
+        per_doubling_ratio: {low: 0.95, mode: 1.0, high: 1.12}
+        agi_threshold_hours: {median: 2500, p95: 15000}
+        paradigm_wall_probability: {value: 0.25}
+        pre_agi_pause_probability: {value: 0.3}
+      progress_inputs:
+        compute_slowdown_year: {low: 2027.5, high: 2029.0}
+        compute_late_multiplier: {low: 0.3, mode: 0.5, high: 0.75}
+      takeoff:
+        post_agi_pause_probability: {value: 0.5}
+        post_agi_pause_months: {median: 6, p95: 24}
+        regime_weights_override: {bottlenecked: 0.6, moderate: 0.4, fast: 0.0, recursive: 0.0}
+      deployment:
+        secrecy_probability: {value: 0.4}

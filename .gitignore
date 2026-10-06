@@ -15,3 +15,6 @@ results/*.csv
 results/*.png
 results/*.md
 !results/.gitkeep
+
+# Nested generated result directories (archived runs live in historical_runs/).
+results/*/

@@ -1,0 +1,5 @@
+target,batches,median_range_months,p90_range_months
+agi,10,3.0,11.0
+internal_asi,10,3.0,13.0
+public_asi,10,4.0,10.0
+agi_to_asi_lag,10,0.6854713677881392,3.0015612163763024

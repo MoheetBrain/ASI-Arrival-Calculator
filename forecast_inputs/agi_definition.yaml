@@ -12,3 +12,30 @@ key_difference_from_asi: >
 forecast_role: "First target in the stage-gated AGI-to-ASI forecasting pipeline."
 output_column: "agi_month"
 
+
+# ---------------------------------------------------------------------------
+# v0.6.0 operationalisation (2026-10-06). The prose definition above is kept
+# verbatim; v0.6 adds a measurable gate and an explicit status test.
+# ---------------------------------------------------------------------------
+v0_6_operational_gate: >
+  Reliable autonomous completion of expert-level work across a very wide range of
+  economically important cognitive tasks. Measured by: (1) the METR-style 50% task
+  horizon on SWE/ML/research tasks reaching agi_threshold_hours (median 1,000h,
+  i.e. an 80%-reliable horizon of roughly one work-month), AND (2) the weakest broad
+  domains (open-ended research judgement, non-verifiable work, perception-heavy
+  computer use) closing generality_gap_doublings further doublings.
+  Explicitly NOT sufficient: a benchmark score, a lab or vendor declaration, or
+  superhuman performance on narrow bounded tasks.
+v0_6_status_test:
+  H0_pre_agi: "Important components clearly missing."
+  H1_transition: "Most core capabilities exist; reliability, autonomy, generalisation or research judgement below the gate."
+  H2_operational_agi: "The operational gate above is already satisfied."
+  verdict_2026_10: >
+    H1 best supported. H2 rejected on the 'reliable/automate' and 'very wide range'
+    clauses: >50% of successful 4-8h agent tasks at OpenAI need human intervention;
+    Anthropic and METR judge the frontier model not close to substituting for
+    research scientists and unable to reliably automate multi-week projects; OpenAI's
+    GPT-6 Astra is below its own 'High' AI-self-improvement threshold. H0 also
+    rejected: superhuman bounded optimisation, OSWorld-Verified 85%, Critical-level
+    cyber capability and Lean-verified resolutions of open Erdos problems show the
+    core components exist. Residual P(H2) = 0.10 reflects definitional slack.

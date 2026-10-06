@@ -1,0 +1,7 @@
+cumulative step,AGI median,lag median (months),internal ASI median,P(internal ASI <= 2030)
+v0.6 baseline,2029-01,34.437304644599294,2032-04,0.3176
+doubling time back to v0.5.1 (median 7.9 mo),2030-10,35.30078931958248,2034-04,0.17335
+current horizon back to v0.5.1 path (22h at 2026-10),2031-02,35.396427631944654,2034-07,0.155825
+no 'already AGI' mass (v0.5.1: impossible),2031-07,35.84762783453806,2035-02,0.085675
+no pre-AGI acceleration (v0.5.1: none),2032-05,35.995804605407734,2035-11,0.05795
+15% late tail landing ~2040-2052 (v0.5.1 mixture),2032-09,36.00458272328757,2036-04,0.05435

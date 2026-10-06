@@ -1,0 +1,6 @@
+step,bottlenecked,moderate,fast,recursive
+prior,0.3,0.35,0.25,0.1
+"group:lab_internal_rnd_measurement (n=3, averaged)",1.0335298504727246,1.0631748884131729,0.9401097653621893,0.8690066612216124
+"group:infrastructure (n=1, averaged)",1.15,1.05,0.95,0.9
+"group:academic_analysis (n=1, averaged)",1.1,1.05,0.95,0.85
+posterior,0.3628119692871887,0.3794880933414385,0.1962061358085583,0.061493801562814455

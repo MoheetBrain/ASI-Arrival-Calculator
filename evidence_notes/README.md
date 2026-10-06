@@ -19,3 +19,8 @@ Cards:
 - [AI Impacts Survey](ai_impacts_survey.md)
 - [Lab Statements](lab_statements.md)
 - [Government Restrictions](government_restrictions.md)
+
+v0.6 (2026-10-06) additions — primary-source verified, see `evidence_tables/v0_6_evidence_2026.csv`:
+
+- [Leader statements 2026](2026_leader_statements.md)
+- [AI doing AI research 2026](2026_ai_rnd_automation.md)
