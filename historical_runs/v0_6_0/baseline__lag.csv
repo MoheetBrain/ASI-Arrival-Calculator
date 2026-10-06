@@ -1,0 +1,19 @@
+metric,value
+conditioning,AGI reached before simulation horizon
+n_conditioned,100000
+mean_lag_months,40.41058823519116
+median_lag_months,34.50937186703037
+p05_lag_months,11.852431844322592
+p10_lag_months,15.638875109513824
+p25_lag_months,23.187382782621494
+p50_lag_months,34.50937186703037
+p75_lag_months,50.976678425391306
+p90_lag_months,72.16332758729926
+p95_lag_months,88.89525027702007
+P(lag < 3 months),0.00021
+P(lag < 6 months),0.00616
+P(lag < 12 months),0.05157
+P(lag < 24 months),0.26831
+P(lag < 60 months),0.83216
+P(lag < 120 months),0.98549
+P(lag > 120 months),0.01451

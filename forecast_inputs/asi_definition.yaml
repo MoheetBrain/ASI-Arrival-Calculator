@@ -15,3 +15,24 @@ output_columns:
   internal: "internal_asi_month"
   public: "public_asi_month"
 
+
+# ---------------------------------------------------------------------------
+# v0.6.0 operationalisation (2026-10-06)
+# ---------------------------------------------------------------------------
+v0_6_internal_asi_criterion: >
+  ASI = AIR&D AND SWE AND MATH AND SCI AND CYBER AND STRATEGY AND AGENCY AND
+  GENERALISATION, each judged against the best human TEAMS, not individuals. In the
+  model: effective capability >= asi_gap_oom orders of magnitude of effective compute
+  beyond AGI (median 3 OOM; roughly the GPT-4 -> 2026 frontier jump again, starting
+  from expert level), realised in a trained successor (training_cycle_lag) and
+  demonstrated across domains (demonstration_lag; formal maths, cyber, AI R&D and
+  science each need their own validation).
+v0_6_public_asi_criterion: >
+  Internal ASI capability that is externally deployed, accessible (including
+  restricted trusted-partner programmes such as Project Glasswing), economically
+  active, or publicly observable. Mixture: staged release (median ~4 months) or a
+  national-security secrecy branch (25%, median ~18 months).
+v0_6_not_asi: >
+  Superhuman performance on bounded optimisation (kernels, training-loop speedups),
+  a single benchmark, Critical-level cyber capability, or isolated open-problem
+  solutions do not by themselves satisfy the criterion.

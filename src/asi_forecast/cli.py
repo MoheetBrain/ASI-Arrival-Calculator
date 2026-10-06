@@ -24,6 +24,8 @@ from .helpers import (
     project_root,
 )
 from .monte_carlo import simulate_forecast
+from .v06 import config as v06_config
+from .v06 import metrics as v06_metrics
 from .write_report import terminal_summary, write_markdown_report
 
 
@@ -77,7 +79,14 @@ and half arrive after it. The 50% interval is the middle half of simulations.
 The 90% interval is the central 90% of simulations.
 
 More simulations reduce numerical noise. They do not make bad assumptions true.
-Edit forecast_inputs/base_forecast_inputs.yaml to inspect or change the assumptions.
+
+Engines:
+- v0.6 (default): forecast_inputs/v0_6/inputs.yaml. Horizon-gated AGI stage and a
+  feedback-driven AGI->ASI takeoff under a Bayesian mixture of four regimes
+  (bottlenecked, moderate, fast, recursive). Scenarios: baseline, agi_era_fast,
+  bottlenecked.
+- v0.5.1 (historical, unchanged): pass --config forecast_inputs/base_forecast_inputs.yaml
+  (scenarios: base, fast, slow).
 """
 
 
@@ -104,10 +113,59 @@ AGI -> AI R&D automation -> superhuman AI researcher -> accelerated progress
 """
 
 
+def _is_v06(args: argparse.Namespace) -> bool:
+    """v0.6 is the default engine; a v0.5-style YAML selects the historical engine."""
+    path = getattr(args, "config", None)
+    return path is None or v06_config.is_v06_file(path)
+
+
+def _load_v06(args: argparse.Namespace) -> tuple[dict, dict, int, int, str]:
+    """Return (baseline_config, scenario_config, sims, seed, scenario)."""
+    scenario = args.scenario or "baseline"
+    base = v06_config.load_v06_config(args.config, "baseline")
+    config = v06_config.apply_v06_scenario(base, scenario)
+    sims = int(args.sims or config["simulation"]["default_sims"])
+    seed = int(args.seed if args.seed is not None else config["simulation"]["random_seed"])
+    return base, config, sims, seed, config["active_scenario"]
+
+
+def _v06_terminal_summary(frame: pd.DataFrame, config: dict, sims: int, scenario: str, target: str) -> str:
+    q = v06_metrics.arrival_quantiles(frame, config["simulation"]["horizon_month"]).set_index("target")
+    lag = v06_metrics.lag_statistics(frame).set_index("metric")["value"]
+    lines = [
+        "AGI and ASI Arrival Forecast (engine v0.6)",
+        f"Scenario: {scenario}",
+        f"Target view: {target}",
+        f"Simulations: {sims:,}",
+        "",
+    ]
+    blocks = [("agi", "AGI / Transformative General AI")]
+    if target in ("asi", "both"):
+        blocks += [("internal_asi", "Internal ASI"), ("public_asi", "Public ASI")]
+    for key, title in blocks:
+        row = q.loc[key]
+        lines += [
+            title,
+            f"  Median: {row['p50']}",
+            f"  50% interval: {row['p25']} to {row['p75']}",
+            f"  80% interval: {row['p10']} to {row['p90']}",
+            f"  90% interval: {row['p05']} to {row['p95']}",
+            "",
+        ]
+    if target in ("asi", "both"):
+        lines += [
+            "AGI -> internal ASI lag (conditional on AGI)",
+            f"  Median: {lag['median_lag_months']:.1f} months; mean {lag['mean_lag_months']:.1f}",
+            f"  P(<12 months) = {lag['P(lag < 12 months)']:.3f}; P(<24 months) = {lag['P(lag < 24 months)']:.3f}",
+            "",
+        ]
+    return "\n".join(lines)
+
+
 def _load_run_config(args: argparse.Namespace) -> tuple[dict, int, int]:
-    """Load inputs, apply scenario, and resolve simulation count plus seed."""
+    """Load v0.5 inputs, apply scenario, and resolve simulation count plus seed."""
     base_config = load_config(args.config)
-    config = apply_scenario(base_config, args.scenario)
+    config = apply_scenario(base_config, args.scenario or "base")
     simulation_config = config["simulation"]
     sims = int(args.sims or simulation_config["default_sims"])
     seed = int(args.seed if args.seed is not None else simulation_config["random_seed"])
@@ -184,6 +242,20 @@ def run_pipeline(
 
 def command_run(args: argparse.Namespace) -> int:
     """Handle `run`."""
+    if _is_v06(args):
+        from .v06.engine import simulate_v06
+        from .v06.report import write_run_outputs
+
+        _, config, sims, seed, scenario = _load_v06(args)
+        results_dir = ensure_output_dir(args.results_dir)
+        frame = simulate_v06(config, sims, seed)
+        tables = write_run_outputs(frame, config, results_dir)
+        tables["quantiles"].assign(sims=sims, seed=seed, scenario=scenario).to_csv(
+            results_dir / SUMMARY_FILE, index=False
+        )
+        print(_v06_terminal_summary(frame, config, sims, scenario, args.target))
+        print(f"Saved results to: {results_dir}")
+        return 0
     config, sims, seed = _load_run_config(args)
     _, summary, driver_table = run_pipeline(
         config,
@@ -197,7 +269,7 @@ def command_run(args: argparse.Namespace) -> int:
             summary,
             driver_table,
             sims=sims,
-            scenario=args.scenario,
+            scenario=args.scenario or "base",
             target=args.target,
         )
     )
@@ -219,6 +291,9 @@ def command_explain_targets(_: argparse.Namespace) -> int:
 
 def command_inputs(args: argparse.Namespace) -> int:
     """Handle `inputs` and the old `assumptions` alias."""
+    if _is_v06(args):
+        print(dump_config(v06_config.load_v06_config(args.config)))
+        return 0
     config = load_config(args.config)
     print(dump_config(config))
     return 0
@@ -251,6 +326,29 @@ def _print_top_drivers(driver_table: pd.DataFrame) -> None:
 
 def command_drivers(args: argparse.Namespace) -> int:
     """Handle `drivers` and the old `sensitivity` alias."""
+    if _is_v06(args):
+        from .v06.engine import simulate_v06
+        from .v06.sensitivity import factor_tornado, spearman_drivers
+
+        _, config, sims, seed, scenario = _load_v06(args)
+        results_dir = _results_dir_from_args(args)
+        frame = simulate_v06(config, sims, seed)
+        drivers = spearman_drivers(frame)
+        drivers.to_csv(results_dir / DRIVERS_FILE, index=False)
+        tornado = factor_tornado(config, int(args.sensitivity_sims), seed)
+        tornado.to_csv(results_dir / "factor_tornado.csv", index=False)
+        for target in ("agi", "agi_to_asi_lag", "internal_asi", "public_asi"):
+            print(f"Top {target} drivers (Spearman, scenario {scenario})")
+            print(drivers[drivers["target"] == target].head(8)[["input", "spearman", "rank"]].to_string(index=False))
+            print()
+        print("Factor tornado: internal-ASI median (months after start) with factor pinned slow vs fast")
+        print(
+            tornado[["factor", "slow:internal_median_months", "fast:internal_median_months", "swing:internal_median_months", "swing:lag_median_months", "swing:agi_median_months"]]
+            .round(1)
+            .to_string(index=False)
+        )
+        print(f"\nSaved drivers to: {results_dir / DRIVERS_FILE}")
+        return 0
     results_dir = _results_dir_from_args(args)
     drivers_path = results_dir / DRIVERS_FILE
 
@@ -262,7 +360,7 @@ def command_drivers(args: argparse.Namespace) -> int:
             config,
             sims=sims,
             seed=seed,
-            scenario=args.scenario,
+            scenario=args.scenario or "base",
             results_dir=results_dir,
         )
 
@@ -274,9 +372,20 @@ def command_drivers(args: argparse.Namespace) -> int:
 def command_report(args: argparse.Namespace) -> int:
     """Handle `report`.
 
-    If existing summary and driver CSVs are present, regenerate the Markdown
-    report from them. Otherwise run the pipeline first.
+    v0.6: runs the full recalibration study (scenarios A/B/C, sensitivity,
+    ablations, alternate priors, backtest) and writes the report + dashboard.
+    v0.5: if existing summary and driver CSVs are present, regenerate the
+    Markdown report from them. Otherwise run the pipeline first.
     """
+    if _is_v06(args):
+        from .v06.report import full_study
+
+        base, _, sims, seed, _ = _load_v06(args)
+        results_dir = _results_dir_from_args(args)
+        result = full_study(base, results_dir, sims, seed, int(args.sensitivity_sims))
+        print(result["dashboard"])
+        print(f"Saved report to: {results_dir / REPORT_FILE}")
+        return 0
     results_dir = _results_dir_from_args(args)
     summary_path = results_dir / SUMMARY_FILE
     drivers_path = results_dir / DRIVERS_FILE
@@ -284,7 +393,7 @@ def command_report(args: argparse.Namespace) -> int:
     convergence_path = results_dir / CONVERGENCE_FILE
     metrics_path = results_dir / METRICS_FILE
     config, sims, seed = _load_run_config(args)
-    scenario = args.scenario
+    scenario = args.scenario or "base"
 
     if summary_path.exists() and drivers_path.exists():
         summary = pd.read_csv(summary_path)
@@ -362,15 +471,24 @@ def add_common_run_arguments(parser: argparse.ArgumentParser) -> None:
         "--config",
         default=None,
         help=(
-            "Path to forecast inputs YAML. Defaults to "
-            "forecast_inputs/base_forecast_inputs.yaml."
+            "Path to forecast inputs YAML. Defaults to the v0.6 inputs "
+            "(forecast_inputs/v0_6/inputs.yaml); pass "
+            "forecast_inputs/base_forecast_inputs.yaml for the historical v0.5.1 engine."
         ),
     )
     parser.add_argument(
         "--scenario",
-        choices=["base", "fast", "slow"],
-        default="base",
-        help="Scenario adjustment to apply.",
+        default=None,
+        help=(
+            "Scenario. v0.6: baseline (default), agi_era_fast, bottlenecked. "
+            "v0.5.1: base (default), fast, slow."
+        ),
+    )
+    parser.add_argument(
+        "--sensitivity-sims",
+        type=int,
+        default=40000,
+        help="Simulations per sensitivity/ablation run (v0.6 drivers/report).",
     )
     parser.add_argument(
         "--results-dir",
